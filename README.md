@@ -8,12 +8,24 @@ _TODO_
 
 _TODO_
 
-```commandline
+```powershell
 py mcd.py --help
 py mcd.py --version
-py mcd.py NEW --log-level ERROR --verbose
-py mcd.py NEW -l ERROR -V
+py mcd.py NEW db-conn-str --log-level ERROR --verbose
+py mcd.py NEW db-conn-str -l ERROR -V
+
+$current_data_pipeline_execution_id = py mcd.py NEW db-conn-str
+echo $current_data_pipeline_execution_id
 ```
+
+```powershell
+py mcd.py NEW db-conn-str
+py mcd.py GET_LAST_EXEC_ID db-conn-str
+py mcd.py AUDIT db-conn-str lastExecId ./load/
+py mcd.py AUDIT db-conn-str lastExecId ./transform/
+py mcd.py COMPLETE db-conn-str currentExecId ./load/ ./transform/
+```
+
 
 ## Setup
 
