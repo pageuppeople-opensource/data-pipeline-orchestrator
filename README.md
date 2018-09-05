@@ -8,6 +8,13 @@ _TODO_
 
 _TODO_
 
+```commandline
+py mcd.py --help
+py mcd.py --version
+py mcd.py NEW --log-level ERROR --verbose
+py mcd.py NEW -l ERROR -V
+```
+
 ## Setup
 
 ### Pre-requisites

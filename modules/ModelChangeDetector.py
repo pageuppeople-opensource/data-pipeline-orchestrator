@@ -4,10 +4,12 @@ import logging
 
 class ModelChangeDetector:
 
-    _appName = 'model-change-detector'
-    _appVersion = '0.0.1'
-    _log_level_strings = ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG']
+    _appName = 'model-change-detector'  # todo: where to save-this and read-this-from?
+    _appVersion = '0.0.1'  # todo: where to save-this and read-this-from?
 
+    _logLevelStrings = ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG']
+
+    # may need to become something like logging.INFO etc. which are integers with corresponding strings.. or may not!
     _executionModes = ['NEW']
 
     def __init__(self, logger=None):
@@ -15,6 +17,20 @@ class ModelChangeDetector:
 
     def main(self):
         args = ModelChangeDetector.get_arguments()
+        ModelChangeDetector.configure_logging(args.log_level)
+        if args.verbose:
+            print(args)
+            print(self.logger)
+
+    @staticmethod
+    def configure_logging(log_level):
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        log = logging.getLogger()
+        console_stream_handler = logging.StreamHandler()
+        console_stream_handler.setFormatter(formatter)
+        log.addHandler(console_stream_handler)
+        log.setLevel(log_level)
+        return
 
     @staticmethod
     def get_arguments():
@@ -34,8 +50,10 @@ class ModelChangeDetector:
         parser.add_argument('mode',
                             action='store',
                             metavar='mode',
+                            choices=ModelChangeDetector._executionModes,
                             # help= f'Sets the execution mode, choose from {ModelChangeDetector._executionModes}')
-                            help='Sets the execution mode, choose from \'{0}\''.format("', '".join(ModelChangeDetector._executionModes)))
+                            help='Sets the execution mode, choose from \'{0}\''.format(
+                                "', '".join(ModelChangeDetector._executionModes)))
 
         # parser.add_argument('destination-engine', metavar='',
         #                     help='The destination engine. Eg: postgresql+psycopg2://postgres:xxxx@localhost/dest_dw')
@@ -67,25 +85,25 @@ class ModelChangeDetector:
                             type=ModelChangeDetector.get_log_level_int_from_string,
                             nargs='?',
                             help='Level of logging output, choose from \'{0}\''.format(
-                                "', '".join(ModelChangeDetector._log_level_strings)))
+                                "', '".join(ModelChangeDetector._logLevelStrings)))
 
-        # group = parser.add_mutually_exclusive_group()
-        #
-        # group.add_argument('-q', '--quiet',
-        #                    action='store_true',
-        #                    help='Enable quiet execution')
-        #
-        # group.add_argument('-v', '--verbose',
-        #                    action='store_true',
-        #                    help='Enable verbose execution')
+        group = parser.add_mutually_exclusive_group()
+
+        group.add_argument('-Q', '--quiet',
+                           action='store_true',
+                           help='Enable quiet execution')
+
+        group.add_argument('-V', '--verbose',
+                           action='store_true',
+                           help='Enable verbose execution')
 
         return parser
 
     @staticmethod
     def get_log_level_int_from_string(log_level_string):
-        if log_level_string not in ModelChangeDetector._log_level_strings:
+        if log_level_string not in ModelChangeDetector._logLevelStrings:
             message = 'invalid choice: {0} (choose from \'{1}\')'.format(
-                log_level_string, "', '".join(ModelChangeDetector._log_level_strings))
+                log_level_string, "', '".join(ModelChangeDetector._logLevelStrings))
             raise argparse.ArgumentTypeError(message)
 
         log_level_int = getattr(logging, log_level_string, logging.INFO)
