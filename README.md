@@ -1,6 +1,12 @@
 # Model Change Detector
 
-_TODO - update description_ This does blah and blah and then more blah.
+## About
+
+_TODO_
+
+## Usage
+
+_TODO_
 
 ## Setup
 
@@ -37,6 +43,7 @@ pip install virtualenv
 #### Create a local virtual python environment for this projects development
 
 `virtualenv <environment-name>` _e.g._ `virtualenv .env`
+Or `py -m virtualenv <environment-name>` _e.g._ `py -m virtualenv .env`
 
 If you build with `virtualenv --system-site-packages .env`, your virtual environment will inherit packages from your global site-packages directory. Although, if you want isolation from the global system, do not use this flag.
 
