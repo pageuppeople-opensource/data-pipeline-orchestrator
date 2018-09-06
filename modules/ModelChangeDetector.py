@@ -2,7 +2,7 @@ import argparse
 import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from modules import Common
+from modules import Shared
 from modules.DataPipelineExecutionRepository import DataPipelineExecutionRepository
 
 
@@ -19,8 +19,8 @@ class ModelChangeDetector:
         self.logger = logger or logging.getLogger(__name__)
 
     def main(self):
-        Common.args = self.get_arguments()
-        Common.configure_logging(self.logger, Common.args.log_level)
+        Shared.args = self.get_arguments()
+        Shared.configure_logging(self.logger, Shared.args.log_level)
 
         execution_result = None
 
@@ -28,19 +28,19 @@ class ModelChangeDetector:
         # - figure out how to separate args.execution_mode code/logic..
         # a class per execution-mode? IExecutionMode.Execute(...)? Factory? DI?
 
-        if Common.args.execution_mode == 'NEW':
-            db_engine = create_engine(Common.args.db_connection_string, echo=Common.args.verbose)
+        if Shared.args.execution_mode == 'NEW':
+            db_engine = create_engine(Shared.args.db_connection_string, echo=Shared.args.verbose)
             session_maker = sessionmaker(bind=db_engine)
             repository = DataPipelineExecutionRepository(session_maker)
             repository.create_schema(engine=db_engine)
             data_pipeline_execution = repository.start_new()
             execution_result = str(data_pipeline_execution.uuid)
-            if Common.args.verbose:
+            if Shared.args.verbose:
                 print(data_pipeline_execution)
 
-        if Common.args.verbose:
-            print(Common.args)
-            print(f'args.log_level = {Common.args.log_level} = {logging.getLevelName(Common.args.log_level)}')
+        if Shared.args.verbose:
+            print(Shared.args)
+            print(f'args.log_level = {Shared.args.log_level} = {logging.getLevelName(Shared.args.log_level)}')
             print(self.logger)
             print(f'execution_result = {execution_result}')
 
@@ -48,7 +48,7 @@ class ModelChangeDetector:
 
     def get_arguments(self):
         parser = argparse.ArgumentParser(description=ModelChangeDetector._appName,
-                                         parents=[Common.get_default_arguments(
+                                         parents=[Shared.get_default_arguments(
                                              ModelChangeDetector._appName,
                                              ModelChangeDetector._appVersion)])
 
