@@ -18,6 +18,8 @@ $current_data_pipeline_execution_id = py mcd.py NEW db-conn-str
 echo $current_data_pipeline_execution_id
 ```
 
+Postgres Db connection string format is `postgresql+psycopg2://user:password@host:port/dbname`
+
 ```powershell
 py mcd.py NEW db-conn-str
 py mcd.py GET_LAST_EXEC_ID db-conn-str
@@ -25,7 +27,11 @@ py mcd.py AUDIT db-conn-str lastExecId ./load/
 py mcd.py AUDIT db-conn-str lastExecId ./transform/
 py mcd.py COMPLETE db-conn-str currentExecId ./load/ ./transform/
 ```
-
+below is not real password, and we would not need a real password due to pg trust
+```powershell
+$current_data_pipeline_execution_id = py mcd.py NEW postgresql+psycopg2://postgres:postgres@:5433/postgres
+echo $current_data_pipeline_execution_id
+```
 
 ## Setup
 
@@ -77,6 +83,11 @@ On Linux / Mac OS
  `source path/to/environment/bin/activate`_e.g._ `source .env/bin/activate`
 
 You should see the name of your virtual environment in brackets on your terminal line e.g. `(.env) C:\path\to\working\dir\`. Any python commands you use will now work with your virtual environment
+
+#### Instal project dependencies
+```powershell
+pip install -r requirements.txt
+```
 
 #### Deactivate the virtual environment
 
