@@ -4,20 +4,23 @@ import uuid
 
 class ModelChangeDetector(object):
 
-    _appName = 'model-change-detector'  # todo: where to save-this and read-this-from?
-    _appVersion = '0.0.1'  # todo: where to save-this and read-this-from?
-
-    _logLevelStrings = ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG']
-    _defaultLogLevelString = logging.getLevelName(logging.INFO)
+    _appName = 'model-change-detector'  # TODO: where to save-this and read-this-from?
+    _appVersion = '0.0.1'  # TODO: where to save-this and read-this-from?
 
     # may need to become something like logging.INFO etc. which are integers with corresponding strings.. or may not :S
     _executionModes = ['NEW']
 
     def __init__(self, logger=None):
         self.logger = logger or logging.getLogger(__name__)
+        self._logLevelStrings = [logging.getLevelName(logging.CRITICAL),
+                                logging.getLevelName(logging.ERROR),
+                                logging.getLevelName(logging.WARNING),
+                                logging.getLevelName(logging.INFO),
+                                logging.getLevelName(logging.DEBUG)]
+        self._defaultLogLevelString = logging.getLevelName(logging.INFO)
 
     def main(self):
-        args = ModelChangeDetector.get_arguments()
+        args = self.get_arguments()
         self.configure_logging(args.log_level)
 
         # TODO add logic to
@@ -27,7 +30,6 @@ class ModelChangeDetector(object):
         
         if args.verbose:
             print(args)
-            print(vars(args))
             print(f'args.log_level = {args.log_level} = {logging.getLevelName(args.log_level)}')
             print(self.logger)
             print(f'execution_result = {execution_result}')
@@ -41,10 +43,9 @@ class ModelChangeDetector(object):
         self.logger.setLevel(log_level)
         return
 
-    @staticmethod
-    def get_arguments():
+    def get_arguments(self):
         parser = argparse.ArgumentParser(description=ModelChangeDetector._appName,
-                                         parents=[ModelChangeDetector.get_default_arguments(
+                                         parents=[self.get_default_arguments(
                                              ModelChangeDetector._appName,
                                              ModelChangeDetector._appVersion)])
 
@@ -61,8 +62,7 @@ class ModelChangeDetector(object):
         args = parser.parse_args()
         return args
 
-    @staticmethod
-    def get_default_arguments(app_name, app_version):
+    def get_default_arguments(self, app_name, app_version):
         parser = argparse.ArgumentParser(add_help=False)
 
         parser.add_argument('-v', '--version',
@@ -71,13 +71,13 @@ class ModelChangeDetector(object):
 
         parser.add_argument('-l', '--log-level',
                             action='store',
-                            const=ModelChangeDetector._defaultLogLevelString,
-                            default=ModelChangeDetector._defaultLogLevelString,
-                            metavar=",".join(ModelChangeDetector._logLevelStrings),
-                            type=ModelChangeDetector.get_log_level_int_from_string,
+                            const=self._defaultLogLevelString,
+                            default=self._defaultLogLevelString,
+                            metavar=",".join(self._logLevelStrings),
+                            type=self.get_log_level_int_from_string,
                             nargs='?',
                             help='logging output level - choose from {0}; default is {1}'.format(
-                                ", ".join(ModelChangeDetector._logLevelStrings), ModelChangeDetector._defaultLogLevelString))
+                                ", ".join(self._logLevelStrings), self._defaultLogLevelString))
 
         group = parser.add_mutually_exclusive_group()
 
@@ -91,11 +91,10 @@ class ModelChangeDetector(object):
 
         return parser
 
-    @staticmethod
-    def get_log_level_int_from_string(log_level_string):
-        if log_level_string not in ModelChangeDetector._logLevelStrings:
+    def get_log_level_int_from_string(self, log_level_string):
+        if log_level_string not in self._logLevelStrings:
             message = 'invalid choice: {0} (choose from {1})'.format(
-                log_level_string, ", ".join(ModelChangeDetector._logLevelStrings))
+                log_level_string, ", ".join(self._logLevelStrings))
             raise argparse.ArgumentTypeError(message)
 
         log_level_int = getattr(logging, log_level_string, logging.INFO)
