@@ -11,7 +11,7 @@ Base = declarative_base()
 class DataPipelineExecutionEntity(Base):
 
     __tablename__ = 'data_pipeline_execution'
-    __table_args__ = {'schema': Constants.DataPipelineExecutionSchemaName}
+    __table_args__ = {'schema': Constants.dataPipelineExecutionSchemaName}
 
     id = Column('id',
                 Integer,

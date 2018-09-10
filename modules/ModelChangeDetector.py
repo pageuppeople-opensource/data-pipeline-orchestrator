@@ -2,15 +2,12 @@ import argparse
 import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from modules import Constants
 from modules import Shared
 from modules.DataPipelineExecutionRepository import DataPipelineExecutionRepository
 
 
 class ModelChangeDetector:
-
-    args = None
-    _appName = 'model-change-detector'  # TODO: where to save-this and read-this-from?
-    _appVersion = '0.0.1'  # TODO: where to save-this and read-this-from?
 
     # may need to become something like logging.INFO etc. which are integers with corresponding strings.. or may not :S
     _executionModes = ['NEW']
@@ -47,10 +44,10 @@ class ModelChangeDetector:
         return execution_result
 
     def get_arguments(self):
-        parser = argparse.ArgumentParser(description=ModelChangeDetector._appName,
+        parser = argparse.ArgumentParser(description=Constants.appName,
                                          parents=[Shared.get_default_arguments(
-                                             ModelChangeDetector._appName,
-                                             ModelChangeDetector._appVersion)])
+                                             Constants.appName,
+                                             Shared.appVersion)])
 
         parser.add_argument('execution_mode',
                             action='store',

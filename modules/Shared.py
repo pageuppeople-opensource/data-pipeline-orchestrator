@@ -2,6 +2,8 @@ import logging
 import argparse
 
 
+appVersion = '0.0.1'  # TODO: where to read-this-from?
+
 args = None
 
 logLevelStrings = [logging.getLevelName(logging.CRITICAL),
@@ -27,7 +29,7 @@ def configure_logging(logger, log_level):
 def get_default_arguments(app_name, app_version):
     parser = argparse.ArgumentParser(add_help=False)
 
-    parser.add_argument('-v', '--version',
+    parser.add_argument('-V', '--version',
                         action='version',
                         version=f'{app_name} {app_version}')
 
@@ -43,11 +45,11 @@ def get_default_arguments(app_name, app_version):
 
     group = parser.add_mutually_exclusive_group()
 
-    group.add_argument('-Q', '--quiet',
+    group.add_argument('-q', '--quiet',
                        action='store_true',
                        help='enable quiet execution')
 
-    group.add_argument('-V', '--verbose',
+    group.add_argument('-v', '--verbose',
                        action='store_true',
                        help='enable verbose execution')
 

@@ -13,7 +13,7 @@ class DataPipelineExecutionRepository(object):
         Shared.configure_logging(self.logger, Shared.args.log_level)
 
     def create_schema(self, engine):
-        engine.execute(f'CREATE SCHEMA IF NOT EXISTS {Constants.DataPipelineExecutionSchemaName}')
+        engine.execute(f'CREATE SCHEMA IF NOT EXISTS {Constants.dataPipelineExecutionSchemaName}')
         Base.metadata.create_all(engine)
 
     def start_new(self):
