@@ -3,7 +3,7 @@ from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
-from modules import Constants
+from modules.Shared import Constants
 
 Base = declarative_base()
 
@@ -47,7 +47,7 @@ class DataPipelineExecutionEntity(Base):
                                Integer,
                                nullable=True)
 
-    # can map to a status lookup table. for now, using the below status
+    # can map to a status lookup table. for now, using the below statuses
     # 1 = started
     # 0 = completed successfully (sort of like exit code 0 of a process)
     # 2,3,4,5... can be all custom statuses built and uses as we proceed

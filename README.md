@@ -7,10 +7,10 @@ A utility that detects changes in models.
 ## Usage
 
 ```commandline
-py mcd.py execution-mode db-connection-string [--help] [--version] [--verbose|quiet] [--log-level]
+py mcd.py <command> <db-connection-string> [--help] [--version] [--verbose|quiet] [--log-level]
 ```
 
-- `execution-mode` is the function to be performed by the utility. The currently supported values are 
+- `command` is the function to be performed by the utility. The currently supported values are 
   - `NEW`: Marks the start of a new execution by creating a record for the same in the given database and returns an ID of the new execution.
 - `db-connection-string` is a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
 
@@ -18,7 +18,7 @@ py mcd.py execution-mode db-connection-string [--help] [--version] [--verbose|qu
 
 - Use a local isolated/virtual python environment for this project
 - Install project dependencies
-- `py mcd.py execution-mode db-connection-string [--help] [--version] [--verbose|quiet] [--log-level]`
+- `py mcd.py <command> <db-connection-string> [--help] [--version] [--verbose|quiet] [--log-level]`
 
 _Windows example:_
 
@@ -36,7 +36,7 @@ py mcd.py NEW postgresql+psycopg2://user:password@host:port/dbname
 - Use/create an empty directory
 - Use a local isolated/virtual python environment for this project
 - [Install](https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs) this package
-- `py -m mcd execution-mode db-connection-string [--help] [--version] [--verbose|quiet] [--log-level]`
+- `py -m mcd <command> <db-connection-string> [--help] [--version] [--verbose|quiet] [--log-level]`
 
 _Windows example:_
 
@@ -54,7 +54,7 @@ py -m mcd NEW postgresql+psycopg2://user:password@host:port/dbname
 
 #### _Work in Progress_
 
-|execution-mode|arguments|returns|
+|command|arguments|returns|
 |-|-|-|
 |`NEW`/`START`|`db-conn-str`|`execution-id`|
 |`GET_LAST_SUCCESSFULL_EXEC_ID`|`db-conn-str`|`execution-id`|

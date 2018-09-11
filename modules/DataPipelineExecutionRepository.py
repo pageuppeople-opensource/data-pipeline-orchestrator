@@ -2,7 +2,7 @@ import logging
 from sqlalchemy import desc
 from modules.DataPipelineExecutionEntity import DataPipelineExecutionEntity, Base
 from modules import Shared
-from modules import Constants
+from modules.Shared import Constants
 
 
 class DataPipelineExecutionRepository(object):
@@ -10,7 +10,8 @@ class DataPipelineExecutionRepository(object):
     def __init__(self, session_maker, logger=None):
         self.session_maker = session_maker
         self.logger = logger or logging.getLogger(__name__)
-        Shared.configure_logging(self.logger, Shared.args.log_level)
+        # Shared.configure_logging(self.logger, Shared.args.log_level)
+        Shared.write_output(self.logger, Shared.args.verbose)
 
     def create_schema(self, engine):
         engine.execute(f'CREATE SCHEMA IF NOT EXISTS {Constants.DATA_PIPELINE_EXECUTION_SCHEMA_NAME}')
