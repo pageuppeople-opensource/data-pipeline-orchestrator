@@ -1,5 +1,5 @@
-appName = 'model-change-detector'
-dataPipelineExecutionSchemaName = 'data_pipeline'
+APP_NAME = 'model-change-detector'
+DATA_PIPELINE_EXECUTION_SCHEMA_NAME = 'data_pipeline'
 
 
 class DataPipelineExecutionStatus:

@@ -44,9 +44,9 @@ class ModelChangeDetector:
         return execution_result
 
     def get_arguments(self):
-        parser = argparse.ArgumentParser(description=Constants.appName,
+        parser = argparse.ArgumentParser(description=Constants.APP_NAME,
                                          parents=[Shared.get_default_arguments(
-                                             Constants.appName,
+                                             Constants.APP_NAME,
                                              Shared.appVersion)])
 
         parser.add_argument('execution_mode',
