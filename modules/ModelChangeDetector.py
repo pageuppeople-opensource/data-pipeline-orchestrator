@@ -4,7 +4,7 @@ from modules import Shared
 from modules.Shared import Constants
 from modules.commands import Commands
 from modules.commands.CommandFactory import CommandFactory
-import pip
+
 
 class ModelChangeDetector:
 
@@ -13,19 +13,22 @@ class ModelChangeDetector:
     def __init__(self, logger=None):
         self.logger = logger or logging.getLogger(__name__)
 
-    def main(self):
-        Shared.args = ModelChangeDetector.get_arguments()
+        self.args = ModelChangeDetector.get_arguments()
+        Shared.args = self.args
+        Shared.write_output(self.args, self.args.verbose)
+        Shared.write_output(f'args.log_level = {self.args.log_level} = {logging.getLevelName(self.args.log_level)}',
+                            self.args.verbose)
+
+        Shared.configure_logging(self.logger, self.args.log_level)
+        Shared.write_output(self.logger, self.args.verbose)
+
         self.command_factory = CommandFactory()
-        Shared.configure_logging(self.logger, Shared.args.log_level)
 
-        command_executor = self.command_factory.create_command(Shared.args.command, Shared.args.db_connection_string)
+    def main(self):
+
+        command_executor = self.command_factory.create_command(self.args.command, self.args.db_connection_string)
         execution_result = command_executor.execute()
-
-        Shared.write_output(Shared.args, Shared.args.verbose)
-        Shared.write_output(f'args.log_level = {Shared.args.log_level} = {logging.getLevelName(Shared.args.log_level)}',
-                        Shared.args.verbose)
-        Shared.write_output(self.logger, Shared.args.verbose)
-        Shared.write_output(f'execution_result = {execution_result}', Shared.args.verbose)
+        Shared.write_output(f'execution_result = {execution_result}', self.args.verbose)
 
         return execution_result
 
