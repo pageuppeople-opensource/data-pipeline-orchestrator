@@ -1,11 +1,10 @@
-import logging
 from modules.commands.StartCommand import StartCommand
-from modules import Shared
+from modules.BaseObject import BaseObject
 
-class CommandFactory(object):
+
+class CommandFactory(BaseObject):
     def __init__(self, logger=None):
-        self.logger = logger or logging.getLogger(__name__)
-        Shared.write_output(self.logger, Shared.args.verbose)
+        super().__init__(logger)
         self.commandTypes = [StartCommand]
 
     def create_command(self, command, db_connection_string):

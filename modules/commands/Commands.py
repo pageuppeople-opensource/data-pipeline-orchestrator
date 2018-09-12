@@ -1,4 +1,4 @@
-# inspired by python logging module
+# inspired by the python logging module
 
 UNKNOWN = 0
 START = 1
@@ -15,37 +15,29 @@ _nameToValue = {
 
 def get_name(command_value):
     """
-    Return the textual representation of integer command value.
+    Return the textual representation of numeric command value.
 
-    If the value is one of the predefined values (START) then you get the corresponding string.
+    If the value is one of the predefined values then you get the corresponding string name.
     Else, name for the value UNKNOWN is returned.
-
-    If a numeric value corresponding to one of the defined levels is passed
-    in, the corresponding string representation is returned.
     """
     result = _valueToName.get(command_value)
+
     if result is not None:
         return result
-    # result = Command._nameToValue.get(command_value)
-    # if result is not None:
-    #     return result
-    return UNKNOWN
+
+    return get_value('UNKNOWN')
 
 
 def get_value(command_name):
     """
-    Return the textual representation of integer command value.
+    Return the numeric representation of textual command name.
 
-    If the value is one of the predefined values (START) then you get the corresponding string.
-    Else, name for the value UNKNOWN is returned.
-
-    If a numeric value corresponding to one of the defined levels is passed
-    in, the corresponding string representation is returned.
+    If the name is one of the predefined names then you get the corresponding numeric value.
+    Else, value for the name UNKNOWN is returned.
     """
-    # result = Command._valueToName.get(command_name)
-    # if result is not None:
-    #     return result
     result = _nameToValue.get(command_name)
+
     if result is not None:
         return result
-    return UNKNOWN
+
+    return get_name(UNKNOWN)

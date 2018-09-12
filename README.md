@@ -7,7 +7,7 @@ A utility that detects changes in models.
 ## Usage
 
 ```commandline
-py mcd.py <command> <db-connection-string> [--help] [--version] [--verbose|quiet] [--log-level]
+py mcd.py <command> <db-connection-string> [--help] [--version] [--log-level]
 ```
 
 - `command` is the function to be performed by the utility. The currently supported values are 
@@ -18,7 +18,7 @@ py mcd.py <command> <db-connection-string> [--help] [--version] [--verbose|quiet
 
 - Use a local isolated/virtual python environment for this project
 - Install project dependencies
-- `py mcd.py <command> <db-connection-string> [--help] [--version] [--verbose|quiet] [--log-level]`
+- `py mcd.py <command> <db-connection-string> [--help] [--version] [--log-level]`
 
 _Windows example:_
 
@@ -36,7 +36,7 @@ py mcd.py NEW postgresql+psycopg2://user:password@host:port/dbname
 - Use/create an empty directory
 - Use a local isolated/virtual python environment for this project
 - [Install](https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs) this package
-- `py -m mcd <command> <db-connection-string> [--help] [--version] [--verbose|quiet] [--log-level]`
+- `py -m mcd <command> <db-connection-string> [--help] [--version] [--log-level]`
 
 _Windows example:_
 
