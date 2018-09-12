@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer
+from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import UUID
@@ -14,22 +14,9 @@ class DataPipelineExecutionEntity(Base):
     __table_args__ = {'schema': Constants.DATA_PIPELINE_EXECUTION_SCHEMA_NAME}
 
     id = Column('id',
-                Integer,
+                UUID(as_uuid=True),
                 primary_key=True,
-                autoincrement=True)
-
-    uuid = Column('uuid',
-                  UUID(as_uuid=True),
-                  unique=True,
-                  nullable=False,
-                  default=uuid.uuid4())
-
-    # or just one identifier?
-    # id = Column('id',
-    #             UUID(as_uuid=True),
-    #             unique=True,
-    #             primary_key=True,
-    #             default=uuid.uuid4())
+                default=uuid.uuid4())
 
     created_on = Column('created_on',
                         DateTime(timezone=True),
@@ -47,18 +34,13 @@ class DataPipelineExecutionEntity(Base):
                                Integer,
                                nullable=True)
 
-    # can map to a status lookup table. for now, using the below statuses
-    # 1 = started
-    # 0 = completed successfully (sort of like exit code 0 of a process)
-    # 2,3,4,5... can be all custom statuses built and uses as we proceed
     status = Column('status',
-                    Integer,
+                    String(50),
                     nullable=False,
                     server_default=str(Constants.DataPipelineExecutionStatus.STARTED))
 
     def __str__(self):
         return f'id={self.id}, ' \
-               f'uuid={self.uuid}, ' \
                f'created_on={self.created_on}, ' \
                f'last_updated_on={self.last_updated_on}, ' \
                f'execution_time_ms={self.execution_time_ms}, ' \

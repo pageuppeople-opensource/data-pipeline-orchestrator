@@ -7,11 +7,9 @@ class Constants:
     DATA_PIPELINE_EXECUTION_SCHEMA_NAME = 'data_pipeline'
 
     class DataPipelineExecutionStatus:
-        STARTED = 1
-        COMPLETED_SUCCESSFULLY = 0
+        STARTED = 'STARTED'
+        COMPLETED_SUCCESSFULLY = 'SUCCESSFUL'
 
-
-appVersion = '0.0.1'
 
 _logLevelStrings = [logging.getLevelName(logging.CRITICAL),
                     logging.getLevelName(logging.ERROR),
@@ -39,18 +37,13 @@ def configure_root_logger(log_level):
     return
 
 
-def get_default_arguments(app_name, app_version):
+def get_default_arguments():
     parser = argparse.ArgumentParser(add_help=False)
-
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version=f'{app_name} {app_version}')
 
     parser.add_argument('-l', '--log-level',
                         action='store',
                         const=_defaultLogLevelString,
                         default=_defaultLogLevelString,
-                        metavar=",".join(_logLevelStrings),
                         type=get_log_level_int_from_string,
                         nargs='?',
                         help=f'choose program\'s logging level, from {", ".join(_logLevelStrings)}; '

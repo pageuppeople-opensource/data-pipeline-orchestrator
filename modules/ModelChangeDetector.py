@@ -24,17 +24,11 @@ class ModelChangeDetector(BaseObject):
 
     def main(self):
         command_executor = self.command_factory.create_command(self.args.command, self.args.db_connection_string)
-
-        execution_result = command_executor.execute()
-        self.logger.debug(f'execution_result = {execution_result}')
-
-        return execution_result
+        command_executor.execute()
 
     def get_arguments(self):
         parser = argparse.ArgumentParser(description=Constants.APP_NAME,
-                                         parents=[Shared.get_default_arguments(
-                                             Constants.APP_NAME,
-                                             Shared.appVersion)])
+                                         parents=[Shared.get_default_arguments()])
 
         parser.add_argument('command',
                             type=self.get_command_value_from_name,

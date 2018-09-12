@@ -12,5 +12,5 @@ class StartCommand(BaseCommand):
 
     def execute(self):
         data_pipeline_execution = self.repository.start_new()
-        execution_result = str(data_pipeline_execution.uuid)
-        return execution_result
+        self.logger.debug('Started new data_pipeline_execution = ' + str(data_pipeline_execution))
+        print(str(data_pipeline_execution.id))
