@@ -11,7 +11,7 @@ py mcd.py <command> <db-connection-string> [--help] [--version] [--log-level]
 ```
 
 - `command` is the function to be performed by the utility. The currently supported values are 
-  - `NEW`: Marks the start of a new execution by creating a record for the same in the given database and returns an ID of the new execution.
+  - `START`: Marks the start of a new execution by creating a record for the same in the given database and returns an ID of the new execution.
 - `db-connection-string` is a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
 
 ### As a script
@@ -28,7 +28,7 @@ new-env\scripts\activate
 
 py -m pip install -r requirements.txt
 
-py mcd.py NEW postgresql+psycopg2://user:password@host:port/dbname
+py mcd.py START postgresql+psycopg2://user:password@host:port/dbname
 ```
 
 ### As a package
@@ -49,17 +49,17 @@ new-env\scripts\activate
 
 pip install -e path\to\model-change-detector
 
-py -m mcd NEW postgresql+psycopg2://user:password@host:port/dbname
+py -m mcd START postgresql+psycopg2://user:password@host:port/dbname
 ```
 
 #### _Work in Progress_
 
 |command|arguments|returns|
 |-|-|-|
-|`NEW`/`START`|`db-conn-str`|`execution-id`|
+|`START`|`db-conn-str`|`execution-id`|
 |`GET_LAST_SUCCESSFULL_EXEC_ID`|`db-conn-str`|`execution-id`|
 |`AUDIT`|`db-conn-str`, `last-execution-id`, `path/to/models/`|-|
-|`COMPLETE`/`FINISH`|`db-conn-str`, `execution-id`|-|
+|`FINISH`|`db-conn-str`, `execution-id`|-|
 
 ## Setup
 
