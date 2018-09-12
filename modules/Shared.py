@@ -11,7 +11,7 @@ class Constants:
         COMPLETED_SUCCESSFULLY = 0
 
 
-appVersion = '0.0.1'  # where to do version-ing and then, read this from there?
+appVersion = '0.0.1'
 
 _logLevelStrings = [logging.getLevelName(logging.CRITICAL),
                     logging.getLevelName(logging.ERROR),

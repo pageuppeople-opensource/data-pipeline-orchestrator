@@ -52,15 +52,6 @@ pip install -e path\to\model-change-detector
 py -m mcd START postgresql+psycopg2://user:password@host:port/dbname
 ```
 
-#### _Work in Progress_
-
-|command|arguments|returns|
-|-|-|-|
-|`START`|`db-conn-str`|`execution-id`|
-|`GET_LAST_SUCCESSFULL_EXEC_ID`|`db-conn-str`|`execution-id`|
-|`AUDIT`|`db-conn-str`, `last-execution-id`, `path/to/models/`|-|
-|`FINISH`|`db-conn-str`, `execution-id`|-|
-
 ## Setup
 
 1. Install pre-requisites
