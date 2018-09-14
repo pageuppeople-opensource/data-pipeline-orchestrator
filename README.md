@@ -36,6 +36,8 @@ py mcd.py START postgresql+psycopg2://user:password@host:port/dbname
 - Use/create an empty directory
 - Use a local isolated/virtual python environment for this project
 - [Install](https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs) this package
+  - `pip install -e path/to/ProjectX`
+  - `pip install -e git+git://github.com/ProjectX.git#egg=ProjectX`
 - `py -m mcd <command> <db-connection-string> [--help] [--log-level]`
 
 _Windows example:_
@@ -47,7 +49,7 @@ cd new-dir
 py -m venv new-env --clear
 new-env\scripts\activate
 
-pip install -e path\to\model-change-detector
+pip install -e git+git://github.com/PageUpPeopleOrg/model-change-detector.git#egg=mcd
 
 py -m mcd START postgresql+psycopg2://user:password@host:port/dbname
 ```
