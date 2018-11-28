@@ -11,21 +11,21 @@ py mcd.py [options] <command> [command-parameters]
 ```
 
 - `options` include:
-  - `--help | -h`:
-  - `--log-level | -l`:
-- `command` is the function to be performed by the utility. The currently supported values are
+  - `--help | -h`: displays help menu.
+  - `--log-level | -l`: sets the log level, defaults to INFO.
+- `command` is the function to be performed by the utility. The currently supported values are:
   - `start`: Marks the start of a new execution by creating a record for the same in the given database. Returns an `execution-id` which is a GUID identifier of the new execution.
     - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
   - `finish`: Marks the completion of an existing execution by updating a record for the same in the given database. Returns nothing unless there's an error.
     - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
-    - `execution-id`: a GUID identifier of an existing data pipeline execution
+    - `execution-id`: a GUID identifier of an existing data pipeline execution.
 
-To get help,use: 
+To get help,use:
+
 ```
 py mcd.py --help
 py mcd.py <command> --help
 ```
-
 
 ### As a script
 
