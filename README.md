@@ -12,7 +12,7 @@ py mcd.py [options] <command> [command-parameters]
 
 - `options` include:
   - `--help | -h`: displays help menu.
-  - `--log-level | -l`: sets the log level, defaults to INFO.
+  - `--log-level | -l`: choose program's logging level, from CRITICAL, ERROR, WARNING, INFO, DEBUG; default is INFO.
 - `command` is the function to be performed by the utility. The currently supported values are:
   - `start`: Marks the start of a new execution by creating a record for the same in the given database. Returns an `execution-id` which is a GUID identifier of the new execution.
     - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
