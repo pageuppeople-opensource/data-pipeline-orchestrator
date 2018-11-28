@@ -7,7 +7,7 @@ A utility that detects changes in models.
 ## Usage
 
 ```commandline
-py mcd.py [--help] [--log-level] <COMMAND> [COMMAND-parameters]
+py mcd.py [options] <command> [command-parameters]
 ```
 
 - `options` include:
@@ -20,11 +20,18 @@ py mcd.py [--help] [--log-level] <COMMAND> [COMMAND-parameters]
     - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
     - `execution-id`: a GUID identifier of an existing data pipeline execution
 
+To get help,use: 
+```
+py mcd.py --help
+py mcd.py <command> --help
+```
+
+
 ### As a script
 
 - Use a local isolated/virtual python environment for this project
 - Install project dependencies
-- `py mcd.py [--help] [--log-level] <COMMAND> [COMMAND-parameters]`
+- `py mcd.py [options] <command> [command-parameters]`
 
 _Windows example:_
 
@@ -34,7 +41,7 @@ new-env\scripts\activate
 
 py -m pip install -r requirements.txt
 
-py mcd.py START postgresql+psycopg2://user:password@host:port/dbname
+py mcd.py start postgresql+psycopg2://user:password@host:port/dbname
 ```
 
 ### As a package
@@ -44,7 +51,7 @@ py mcd.py START postgresql+psycopg2://user:password@host:port/dbname
 - [Install](https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs) this package
   - `pip install -e path/to/ProjectX`
   - `pip install -e git+git://github.com/ProjectX.git#egg=ProjectX`
-- `py -m mcd <command> <db-connection-string> [--help] [--log-level]`
+- `py -m mcd [options] <command> <command-options>`
 
 _Windows example:_
 
@@ -57,7 +64,7 @@ new-env\scripts\activate
 
 pip install -e git+git://github.com/PageUpPeopleOrg/model-change-detector.git#egg=mcd
 
-py -m mcd START postgresql+psycopg2://user:password@host:port/dbname
+py -m mcd start postgresql+psycopg2://user:password@host:port/dbname
 ```
 
 ## Setup

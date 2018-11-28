@@ -27,7 +27,7 @@ class ModelChangeDetector(BaseObject):
 
     def __get_arguments(self):
         parser = argparse.ArgumentParser(description=Constants.APP_NAME,
-                                         usage='mcd [options] <COMMAND> [COMMAND-parameters]\n\n'
+                                         usage='mcd [options] <command> [command-parameters]\n\n'
                                                'To see help text, you can run\n'
                                                '  mcd --help\n'
                                                '  mcd <command> --help',
