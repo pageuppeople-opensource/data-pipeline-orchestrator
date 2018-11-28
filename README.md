@@ -1,14 +1,5 @@
 # Model Change Detector
 
-## _Work in Progress_
-
-| command                        | arguments                                             | returns        |
-| ------------------------------ | ----------------------------------------------------- | -------------- |
-| `START`                        | `db-conn-str`                                         | `execution-id` |
-| `GET_LAST_SUCCESSFULL_EXEC_ID` | `db-conn-str`                                         | `execution-id` |
-| `AUDIT`                        | `db-conn-str`, `last-execution-id`, `path/to/models/` | -              |
-| `FINISH`                       | `db-conn-str`, `execution-id`                         | -              |
-
 ## About
 
 A utility that detects changes in models.
@@ -16,18 +7,24 @@ A utility that detects changes in models.
 ## Usage
 
 ```commandline
-py mcd.py <command> <db-connection-string> [--help] [--log-level]
+py mcd.py [--help] [--log-level] <COMMAND> [COMMAND-parameters]
 ```
 
+- `options` include:
+  - `--help | -h`:
+  - `--log-level | -l`:
 - `command` is the function to be performed by the utility. The currently supported values are
-  - `START`: Marks the start of a new execution by creating a record for the same in the given database and returns an ID of the new execution.
-- `db-connection-string` is a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
+  - `start`: Marks the start of a new execution by creating a record for the same in the given database. Returns an `execution-id` which is a GUID identifier of the new execution.
+    - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
+  - `finish`: Marks the completion of an existing execution by updating a record for the same in the given database. Returns nothing unless there's an error.
+    - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
+    - `execution-id`: a GUID identifier of an existing data pipeline execution
 
 ### As a script
 
 - Use a local isolated/virtual python environment for this project
 - Install project dependencies
-- `py mcd.py <command> <db-connection-string> [--help] [--log-level]`
+- `py mcd.py [--help] [--log-level] <COMMAND> [COMMAND-parameters]`
 
 _Windows example:_
 
