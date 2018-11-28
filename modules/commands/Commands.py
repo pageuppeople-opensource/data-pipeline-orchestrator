@@ -1,15 +1,18 @@
 # inspired by the python logging module
 
-UNKNOWN = 0
-START = 1
+UNKNOWN = 'UNKNOWN'
+START = 'START'
+FINISH = 'FINISH'
 
 _valueToName = {
     UNKNOWN: 'UNKNOWN',
-    START: 'START'
+    START: 'START',
+    FINISH: 'FINISH',
 }
 _nameToValue = {
     'UNKNOWN': UNKNOWN,
-    'START': START
+    'START': START,
+    'FINISH': FINISH,
 }
 
 
@@ -20,7 +23,7 @@ def get_name(command_value):
     If the value is one of the predefined values then you get the corresponding string name.
     Else, name for the value UNKNOWN is returned.
     """
-    result = _valueToName.get(command_value)
+    result = _valueToName.get(command_value.upper())
 
     if result is not None:
         return result
@@ -35,7 +38,7 @@ def get_value(command_name):
     If the name is one of the predefined names then you get the corresponding numeric value.
     Else, value for the name UNKNOWN is returned.
     """
-    result = _nameToValue.get(command_name)
+    result = _nameToValue.get(command_name.upper())
 
     if result is not None:
         return result

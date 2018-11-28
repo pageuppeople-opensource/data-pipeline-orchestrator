@@ -23,21 +23,37 @@ class ModelChangeDetector(BaseObject):
         self.command_factory = CommandFactory()
 
     def main(self):
-        command_executor = self.command_factory.create_command(self.args.command, self.args.db_connection_string)
-        command_executor.execute()
+        command_executor = self.command_factory.create_command(self.args.command.upper(), self.args.db_connection_string)
+        # command_executor.execute()
+        # command_executor.execute(self.args.execution_id)
+
 
     def get_arguments(self):
         parser = argparse.ArgumentParser(description=Constants.APP_NAME,
+                                         usage='mcd [options] <COMMAND> [COMMAND-parameters]\n\n'
+                                         'To see help text, you can run\n'
+                                         '  mcd --help\n'
+                                         '  mcd <command> --help',
                                          parents=[Shared.get_default_arguments()])
+        
+        subparsers = parser.add_subparsers(title='commands', metavar='', dest='command')
 
-        parser.add_argument('command',
-                            type=self.get_command_value_from_name,
-                            help=f'choose from {", ".join(self._commandNames)}, more coming soon..')
+        start_command_parser = subparsers.add_parser('start', help='help text for \'start\' command')
+        # start_command_parser.set_defaults(func=start_new_execution)
+        start_command_parser.add_argument('db_connection_string',
+                                          metavar='db-connection-string',
+                                          help='provide in PostgreSQL & Psycopg format, '
+                                               'postgresql+psycopg2://username:password@host:port/dbname')
 
-        parser.add_argument('db_connection_string',
-                            metavar='db-connection-string',
-                            help='provide in PostgreSQL & Psycopg format, '
-                                 'postgresql+psycopg2://username:password@host:port/dbname')
+        finish_command_parser = subparsers.add_parser('finish', help='help text for \'finish\' command')
+        # start_command_parser.set_defaults(func=finish_execution)
+        finish_command_parser.add_argument('db_connection_string',
+                                           metavar='db-connection-string',
+                                           help='provide in PostgreSQL & Psycopg format, '
+                                                'postgresql+psycopg2://username:password@host:port/dbname')
+        finish_command_parser.add_argument('execution_id',
+                                           metavar='execution_id',
+                                           help='data pipeline execution id as received using \'start\' command')
 
         args = parser.parse_args()
 
