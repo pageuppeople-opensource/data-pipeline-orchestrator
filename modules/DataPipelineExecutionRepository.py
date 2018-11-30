@@ -28,3 +28,13 @@ class DataPipelineExecutionRepository(BaseObject):
             .order_by(desc(DataPipelineExecutionEntity.last_updated_on))\
             .first()
 
+    def finish_existing(self, execution_id):
+        session = self.session_maker()
+        data_pipeline_execution = session.query(DataPipelineExecutionEntity)\
+            .filter_by(id=execution_id)\
+            .first()
+        data_pipeline_execution.status = Constants.DataPipelineExecutionStatus.COMPLETED_SUCCESSFULLY
+        session.commit()
+        return data_pipeline_execution
+
+

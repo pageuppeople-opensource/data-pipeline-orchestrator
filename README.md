@@ -2,23 +2,36 @@
 
 ## About
 
-A utility that detects changes in models.  
+A utility that detects changes in models.
 
 ## Usage
 
 ```commandline
-py mcd.py <command> <db-connection-string> [--help] [--log-level]
+py mcd.py [options] <command> [command-parameters]
 ```
 
-- `command` is the function to be performed by the utility. The currently supported values are 
-  - `START`: Marks the start of a new execution by creating a record for the same in the given database and returns an ID of the new execution.
-- `db-connection-string` is a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
+- `options` include:
+  - `--help | -h`: displays help menu.
+  - `--log-level | -l`: choose program's logging level, from CRITICAL, ERROR, WARNING, INFO, DEBUG; default is INFO.
+- `command` is the function to be performed by the utility. The currently supported values are:
+  - `start`: Marks the start of a new execution by creating a record for the same in the given database. Returns an `execution-id` which is a GUID identifier of the new execution.
+    - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
+  - `finish`: Marks the completion of an existing execution by updating a record for the same in the given database. Returns nothing unless there's an error.
+    - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
+    - `execution-id`: a GUID identifier of an existing data pipeline execution.
+
+To get help,use:
+
+```
+py mcd.py --help
+py mcd.py <command> --help
+```
 
 ### As a script
 
 - Use a local isolated/virtual python environment for this project
 - Install project dependencies
-- `py mcd.py <command> <db-connection-string> [--help] [--log-level]`
+- `py mcd.py [options] <command> [command-parameters]`
 
 _Windows example:_
 
@@ -28,7 +41,7 @@ new-env\scripts\activate
 
 py -m pip install -r requirements.txt
 
-py mcd.py START postgresql+psycopg2://user:password@host:port/dbname
+py mcd.py start postgresql+psycopg2://user:password@host:port/dbname
 ```
 
 ### As a package
@@ -38,7 +51,7 @@ py mcd.py START postgresql+psycopg2://user:password@host:port/dbname
 - [Install](https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs) this package
   - `pip install -e path/to/ProjectX`
   - `pip install -e git+git://github.com/ProjectX.git#egg=ProjectX`
-- `py -m mcd <command> <db-connection-string> [--help] [--log-level]`
+- `py -m mcd [options] <command> <command-options>`
 
 _Windows example:_
 
@@ -51,7 +64,7 @@ new-env\scripts\activate
 
 pip install -e git+git://github.com/PageUpPeopleOrg/model-change-detector.git#egg=mcd
 
-py -m mcd START postgresql+psycopg2://user:password@host:port/dbname
+py -m mcd start postgresql+psycopg2://user:password@host:port/dbname
 ```
 
 ## Setup
@@ -59,7 +72,7 @@ py -m mcd START postgresql+psycopg2://user:password@host:port/dbname
 1. Install pre-requisites
 2. Use a local isolated/virtual python environment for this project
 3. Install project dependencies
-4. Develop and test code changes 
+4. Develop and test code changes
 5. Once done, deactivate the virtual environment
 
 ### Install pre-requisites
@@ -96,13 +109,15 @@ On Windows:
 
 On Linux / Mac OS
 
- `source path/to/environment/bin/activate` _e.g._ `source new-env/bin/activate`
+`source path/to/environment/bin/activate` _e.g._ `source new-env/bin/activate`
 
-You should see the name of your virtual environment in brackets on your terminal line, e.g.: 
+You should see the name of your virtual environment in brackets on your terminal line, e.g.:
+
 ```
 C:\path\to\working\dir: new-env\scripts\activate
 (new-env) C:\path\to\working\dir: _
 ```
+
 Any python commands you use will now, work within your virtual environment only.
 
 ### Install project dependencies
@@ -113,7 +128,7 @@ pip install -r requirements.txt
 
 ### Deactivate the virtual environment
 
-Once done, deactivate the virtual environment with a simple `decativate` command, e.g.: 
+Once done, deactivate the virtual environment with a simple `decativate` command, e.g.:
 
 ```commandline
 (new-env) C:\path\to\working\dir: deactivate

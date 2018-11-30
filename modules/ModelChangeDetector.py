@@ -2,17 +2,14 @@ import argparse
 import logging
 from modules import Shared
 from modules.Shared import Constants
-from modules.commands import Commands
-from modules.commands.CommandFactory import CommandFactory
 from modules.BaseObject import BaseObject
+from modules.commands.StartCommand import StartCommand
+from modules.commands.FinishCommand import FinishCommand
 
 
 class ModelChangeDetector(BaseObject):
-
-    _commandNames = [Commands.get_name(Commands.START)]
-
     def __init__(self, logger=None):
-        self.args = self.get_arguments()
+        self.args = self.__get_arguments()
         Shared.configure_root_logger(self.args.log_level)
 
         super().__init__(logger)
@@ -20,34 +17,43 @@ class ModelChangeDetector(BaseObject):
         self.logger.debug(self.args)
         self.logger.debug(f'args.log_level = {self.args.log_level} = {logging.getLevelName(self.args.log_level)}')
 
-        self.command_factory = CommandFactory()
+        self.args.func()
 
-    def main(self):
-        command_executor = self.command_factory.create_command(self.args.command, self.args.db_connection_string)
-        command_executor.execute()
+    def __process_start_command(self):
+        StartCommand(self.args.db_connection_string).execute()
 
-    def get_arguments(self):
+    def __process_finish_command(self):
+        FinishCommand(self.args.db_connection_string, self.args.execution_id).execute()
+
+    def __get_arguments(self):
         parser = argparse.ArgumentParser(description=Constants.APP_NAME,
+                                         usage='mcd [options] <command> [command-parameters]\n\n'
+                                               'To see help text, you can run\n'
+                                               '  mcd --help\n'
+                                               '  mcd <command> --help',
                                          parents=[Shared.get_default_arguments()])
 
-        parser.add_argument('command',
-                            type=self.get_command_value_from_name,
-                            help=f'choose from {", ".join(self._commandNames)}, more coming soon..')
+        subparsers = parser.add_subparsers(title='commands', metavar='', dest='command')
 
-        parser.add_argument('db_connection_string',
-                            metavar='db-connection-string',
-                            help='provide in PostgreSQL & Psycopg format, '
-                                 'postgresql+psycopg2://username:password@host:port/dbname')
+        start_command_parser = subparsers.add_parser('start', help='help text for \'start\' command')
+        start_command_parser.set_defaults(func=self.__process_start_command)
+        self.__get_default_command_arguments(start_command_parser)
+
+        finish_command_parser = subparsers.add_parser('finish', help='help text for \'finish\' command')
+        finish_command_parser.set_defaults(func=self.__process_finish_command)
+        self.__get_default_command_arguments(finish_command_parser)
+        finish_command_parser.add_argument('execution_id',
+                                           metavar='execution_id',
+                                           help='data pipeline execution id as received using \'start\' command')
 
         args = parser.parse_args()
 
         return args
 
-    def get_command_value_from_name(self, command_name):
-        if command_name not in self._commandNames:
-            message = f'invalid choice: {command_name} (choose from {", ".join(self._commandNames)})'
-            raise argparse.ArgumentTypeError(message)
+    @staticmethod
+    def __get_default_command_arguments(command_parser):
+        command_parser.add_argument('db_connection_string',
+                                    metavar='db-connection-string',
+                                    help='provide in PostgreSQL & Psycopg format, '
+                                         'postgresql+psycopg2://username:password@host:port/dbname')
 
-        command_value = getattr(Commands, command_name, Commands.UNKNOWN)
-
-        return command_value
