@@ -1,19 +1,20 @@
 from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.sql import func
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from modules.Shared import Constants
+from modules import Shared
 
-Base = declarative_base()
+TABLE_NAME = 'data_pipeline_execution'
+PRIMARY_KEY_COL_NAME = 'id'
 
 
-class DataPipelineExecutionEntity(Base):
+class DataPipelineExecutionEntity(Shared.BaseEntity):
 
-    __tablename__ = 'data_pipeline_execution'
+    __tablename__ = TABLE_NAME
     __table_args__ = {'schema': Constants.DATA_PIPELINE_EXECUTION_SCHEMA_NAME}
 
-    id = Column('id',
+    id = Column(PRIMARY_KEY_COL_NAME,
                 UUID(as_uuid=True),
                 primary_key=True,
                 default=uuid.uuid4())
