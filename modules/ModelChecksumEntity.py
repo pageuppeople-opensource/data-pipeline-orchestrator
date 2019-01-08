@@ -35,6 +35,10 @@ class ModelChecksumEntity(Shared.BaseEntity):
                              server_default=func.now(),
                              onupdate=func.now())
 
+    foldername = Column('foldername',
+                        String(100),
+                        nullable=False)
+
     filename = Column('filename',
                       String(250),
                       nullable=False)

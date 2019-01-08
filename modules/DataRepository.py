@@ -14,7 +14,7 @@ class DataRepository(BaseObject):
         engine.execute(f'CREATE SCHEMA IF NOT EXISTS {Constants.DATA_PIPELINE_EXECUTION_SCHEMA_NAME}')
         Shared.BaseEntity.metadata.create_all(engine)
 
-    def start_new(self):
+    def start_execution(self):
         session = self.session_maker()
 
         data_pipeline_execution = DataPipelineExecutionEntity()
@@ -23,21 +23,20 @@ class DataRepository(BaseObject):
         session.commit()
         return data_pipeline_execution
 
-    def finish_existing(self, execution_id, file_checksums):
+    def finish_execution(self, execution_id, foldername, file_checksums):
         session = self.session_maker()
 
-        data_pipeline_execution = session.query(DataPipelineExecutionEntity)\
-            .filter_by(id=execution_id)\
+        data_pipeline_execution = session.query(DataPipelineExecutionEntity) \
+            .filter_by(id=execution_id) \
             .one()
         data_pipeline_execution.status = Constants.DataPipelineExecutionStatus.COMPLETED_SUCCESSFULLY
 
-        for file_name, file_hash in sorted(set(file_checksums.items())):
-            model_hash = ModelChecksumEntity(execution_id=data_pipeline_execution.id,
-                                             filename=file_name,
-                                             checksum=file_hash)
-            session.add(model_hash)
+        for filename, checksum in sorted(set(file_checksums.items())):
+            model_checksum = ModelChecksumEntity(execution_id=data_pipeline_execution.id,
+                                                 foldername=foldername,
+                                                 filename=filename,
+                                                 checksum=checksum)
+            session.add(model_checksum)
 
         session.commit()
         return data_pipeline_execution
-
-

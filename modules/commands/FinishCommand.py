@@ -23,11 +23,11 @@ class FinishCommand(BaseCommand):
 
         file_checksums = {}
         for file in models_folder.rglob(self._models_file_pattern):
-            file_name = file.name
-            file_checksum = self.__get_file_checksum(file)
-            file_checksums[file_name] = file_checksum
+            file_checksums[file.name] = self.__get_file_checksum(file)
 
-        data_pipeline_execution = self.repository.finish_existing(self._execution_id, file_checksums)
+        data_pipeline_execution = self.repository.finish_execution(self._execution_id,
+                                                                   models_folder.name,
+                                                                   file_checksums)
         self.logger.debug('Finished data_pipeline_execution = ' + str(data_pipeline_execution))
 
     def __get_file_checksum(self, file: Path):
@@ -35,6 +35,6 @@ class FinishCommand(BaseCommand):
         hash_function = hashlib.sha256()
         hash_function.update(data)
         checksum = hash_function.hexdigest()
-        self.logger.debug('\nfilename={0}, filepath=\'{1}\''.format(file.name, file.absolute().as_posix()))
-        self.logger.debug('hash_function={0}, checksum_len={1}, checksum={2}'.format(hash_function.name, len(checksum), checksum))
+        self.logger.debug(f'filename={file.name}, filepath=\'{file.absolute().as_posix()}\'')
+        self.logger.debug(f'hash_function={hash_function.name}, checksum_len={len(checksum)}, checksum={checksum}')
         return checksum
