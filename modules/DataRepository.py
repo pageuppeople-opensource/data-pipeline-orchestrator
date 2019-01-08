@@ -1,6 +1,6 @@
 from modules.BaseObject import BaseObject
-from modules.DataPipelineExecutionEntity import DataPipelineExecutionEntity
-from modules.ModelChecksumEntity import ModelChecksumEntity
+from modules.entities.DataPipelineExecutionEntity import DataPipelineExecutionEntity
+from modules.entities.ModelChecksumEntity import ModelChecksumEntity
 from modules.Shared import Constants
 from modules import Shared
 
