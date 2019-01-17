@@ -23,7 +23,7 @@ class ModelChangeDetector(BaseObject):
         StartCommand(self.args.db_connection_string).execute()
 
     def __process_finish_command(self):
-        FinishCommand(self.args.db_connection_string, self.args.execution_id, self.args.models_folder_path).execute()
+        FinishCommand(self.args.db_connection_string, self.args.execution_id, self.args.model_folder_paths).execute()
 
     def __get_arguments(self):
         parser = argparse.ArgumentParser(description=Constants.APP_NAME,
@@ -45,9 +45,10 @@ class ModelChangeDetector(BaseObject):
         finish_command_parser.add_argument('execution_id',
                                            metavar='execution_id',
                                            help='data pipeline execution id as received using \'start\' command')
-        finish_command_parser.add_argument('models_folder_path',
-                                           metavar='models_folder_path',
-                                           help='path/to/models/folder')
+        finish_command_parser.add_argument('model_folder_paths',
+                                           metavar='model-folder-paths',
+                                           nargs='+',
+                                           help='path/to/load/models path/to/transform/models')
 
         args = parser.parse_args()
 

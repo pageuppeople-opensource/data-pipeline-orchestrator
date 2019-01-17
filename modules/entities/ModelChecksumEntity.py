@@ -35,13 +35,13 @@ class ModelChecksumEntity(Shared.BaseEntity):
                              server_default=func.now(),
                              onupdate=func.now())
 
-    foldername = Column('foldername',
-                        String(100),
-                        nullable=False)
+    type = Column('type',
+                  String(100),
+                  nullable=False)
 
-    filename = Column('filename',
-                      String(250),
-                      nullable=False)
+    name = Column('name',
+                  String(250),
+                  nullable=False)
 
     checksum = Column('checksum',
                       String(100),
@@ -52,5 +52,6 @@ class ModelChecksumEntity(Shared.BaseEntity):
             f'execution_id={self.execution_id}, ' \
             f'created_on={self.created_on}, ' \
             f'last_updated_on={self.last_updated_on}, ' \
-            f'filename={self.filename}, ' \
+            f'type={self.type}, ' \
+            f'name={self.name}, ' \
             f'checksum={self.checksum}.'

@@ -16,10 +16,10 @@ py mcd.py [options] <command> [command-parameters]
 - `command` is the function to be performed by the utility. The currently supported values are:
   - `start`: Marks the start of a new execution by creating a record for the same in the given database. Returns an `execution-id` which is a GUID identifier of the new execution.
     - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
-  - `finish`: Marks the completion of an existing execution by updating a record for the same in the given database. Returns nothing unless there's an error.
+  - `finish`: Marks the completion of an existing execution by updating a record for the same in the given database. Also, calculates and persists SHA256-hashed checksums of all model files and their types _(as derived from the root folder name)_. Returns nothing unless there's an error.
     - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
     - `execution-id`: a GUID identifier of an existing data pipeline execution.
-    - `models_folder_path`: absolute or relative path to models e.g.: `./models`
+    - `model-folder-paths`: absolute or relative paths to load and transform models e.g.: `./models/load ./models/transform`
 
 To get help,use:
 
@@ -43,7 +43,7 @@ new-env\scripts\activate
 py -m pip install -r requirements.txt
 
 py mcd.py start postgresql+psycopg2://user:password@host:port/dbname
-py mcd.py finish postgresql+psycopg2://user:password@host:port/dbname 43800568-54cc-4da8-8c80-a573052245f0 ./models
+py mcd.py finish postgresql+psycopg2://user:password@host:port/dbname execution-id-as-retured-by-start-command ./path/to/load/models ./path/to/transform/models
 ```
 
 ### As a package
@@ -67,7 +67,7 @@ new-env\scripts\activate
 pip install -e git+git://github.com/PageUpPeopleOrg/model-change-detector.git#egg=mcd
 
 py -m mcd start postgresql+psycopg2://user:password@host:port/dbname
-py -m mcd finish postgresql+psycopg2://user:password@host:port/dbname 43800568-54cc-4da8-8c80-a573052245f0 ./models
+py -m mcd finish postgresql+psycopg2://user:password@host:port/dbname execution-id-as-retured-by-start-command ./path/to/load/models ./path/to/transform/models
 ```
 
 ## Setup

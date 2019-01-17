@@ -23,7 +23,7 @@ class DataRepository(BaseObject):
         session.commit()
         return data_pipeline_execution
 
-    def finish_execution(self, execution_id, foldername, file_checksums):
+    def finish_execution(self, execution_id, model_checksums_by_folders):
         session = self.session_maker()
 
         data_pipeline_execution = session.query(DataPipelineExecutionEntity) \
@@ -31,12 +31,13 @@ class DataRepository(BaseObject):
             .one()
         data_pipeline_execution.status = Constants.DataPipelineExecutionStatus.COMPLETED_SUCCESSFULLY
 
-        for filename, checksum in sorted(set(file_checksums.items())):
-            model_checksum = ModelChecksumEntity(execution_id=data_pipeline_execution.id,
-                                                 foldername=foldername,
-                                                 filename=filename,
-                                                 checksum=checksum)
-            session.add(model_checksum)
+        for folder_name, model_checksums in model_checksums_by_folders.items():
+            for model, checksum in sorted(set(model_checksums.items())):
+                model_checksum = ModelChecksumEntity(execution_id=data_pipeline_execution.id,
+                                                     type=folder_name,
+                                                     name=model,
+                                                     checksum=checksum)
+                session.add(model_checksum)
 
         session.commit()
         return data_pipeline_execution

@@ -1,33 +1,34 @@
 import hashlib
-import argparse
 from pathlib import Path
 from modules.commands.BaseCommand import BaseCommand
 
 
 class FinishCommand(BaseCommand):
-    _execution_id: str
-    _models_folder_path: str
-    _models_file_pattern: str
-
-    def __init__(self, db_connection_string, execution_id, models_folder_path, logger=None):
+    def __init__(self, db_connection_string, execution_id, model_folder_paths, logger=None):
         super().__init__(db_connection_string, logger)
         self._execution_id = execution_id
-        self._models_folder_path = models_folder_path
-        self._models_file_pattern = '*.sql'
+        self._model_folder_paths = model_folder_paths
+        self._model_file_extensions = ['.json', '.csv', '.sql']
 
     def execute(self):
-        models_folder = Path(self._models_folder_path)
-        if not models_folder.is_dir():
-            raise argparse.ArgumentError(f'Given \'models_folder_path\' of {self._models_folder_path} is not a '
-                                         f'directory.')
+        model_folders = []
+        for model_folder_path in self._model_folder_paths:
+            model_folder = Path(model_folder_path)
+            if not model_folder.is_dir():
+                raise NotADirectoryError(model_folder_path)
+            model_folders.append(model_folder)
 
-        file_checksums = {}
-        for file in models_folder.rglob(self._models_file_pattern):
-            file_checksums[file.name] = self.__get_file_checksum(file)
+        all_model_file_checksums = {}
+        for model_folder in model_folders:
+            model_file_checksums = {}
+            for file in model_folder.rglob('*.*'):
+                if file.is_file() and file.suffix in self._model_file_extensions:
+                    model_file_checksums[file.stem] = self.__get_file_checksum(file)
+            all_model_file_checksums[model_folder.name] = model_file_checksums
 
         data_pipeline_execution = self.repository.finish_execution(self._execution_id,
-                                                                   models_folder.name,
-                                                                   file_checksums)
+                                                                   all_model_file_checksums)
+
         self.logger.debug('Finished data_pipeline_execution = ' + str(data_pipeline_execution))
 
     def __get_file_checksum(self, file: Path):
