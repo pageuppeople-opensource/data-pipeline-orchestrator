@@ -43,7 +43,7 @@ class ModelChangeDetector(BaseObject):
         finish_command_parser.set_defaults(func=self.__process_finish_command)
         self.__get_default_command_arguments(finish_command_parser)
         finish_command_parser.add_argument('execution_id',
-                                           metavar='execution_id',
+                                           metavar='execution-id',
                                            help='data pipeline execution id as received using \'start\' command')
         finish_command_parser.add_argument('model_folder_paths',
                                            metavar='model-folder-paths',
