@@ -11,6 +11,7 @@ class Constants:
 
     class DataPipelineExecutionStatus:
         STARTED = 'STARTED'
+        IN_PROGRESS = 'IN PROGRESS'
         COMPLETED_SUCCESSFULLY = 'SUCCESSFUL'
 
 

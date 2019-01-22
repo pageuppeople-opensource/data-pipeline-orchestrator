@@ -13,17 +13,20 @@ py mcd.py [options] <command> [command-parameters]
 - `options` include:
   - `--help | -h`: displays help menu.
   - `--log-level | -l`: choose program's logging level, from CRITICAL, ERROR, WARNING, INFO, DEBUG; default is INFO.
+- `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
 - `command` is the function to be performed by the utility. The currently supported values are:
   - `start`: Marks the start of a new execution by creating a record for the same in the given database. Returns an `execution-id` which is a GUID identifier of the new execution.
-    - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
+  - `compare`: Compares & persists checksums of the given models against those of the last successful execution. Returns comma-separated string of changed model names.
+    - `execution-id`: a GUID identifier of an existing data pipeline execution as returned by the `start` command.
+    - `model-type`: type of models being processed e.g.: `load`, `transform`, etc. this `model-type` is used to group the model checksums by and used to find and compare older ones.
+    - `base-path`: absolute or relative path to the models e.g.: `./load`, `/home/local/load`, `C:/path/to/load`
+    - `model-patterns`: path-based patterns _(relative to `base-path`)_ to different models with extensions. models within a model-type must be named uniquely regardless of their file extension. e.g.: `*.txt`, `**/*.txt`, `./relative/path/to/some_models/**/*.csv`, `relative/path/to/some/more/related/models/**/*.sql`
   - `finish`: Marks the completion of an existing execution by updating a record for the same in the given database. Also, calculates and persists SHA256-hashed checksums of all model files and their types _(as derived from the root folder name)_. Returns nothing unless there's an error.
-    - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
-    - `execution-id`: a GUID identifier of an existing data pipeline execution.
-    - `model-folder-paths`: absolute or relative paths to load and transform models e.g.: `./models/load ./models/transform`
+    - `execution-id`: a GUID identifier of an existing data pipeline execution as returned by the `start` command.
 
 To get help,use:
 
-```
+```commandline
 py mcd.py --help
 py mcd.py <command> --help
 ```
@@ -42,8 +45,10 @@ new-env\scripts\activate
 
 py -m pip install -r requirements.txt
 
-py mcd.py start postgresql+psycopg2://user:password@host:port/dbname
-py mcd.py finish postgresql+psycopg2://user:password@host:port/dbname execution-id-as-retured-by-start-command ./path/to/load/models ./path/to/transform/models
+py mcd.py postgresql+psycopg2://user:password@host:port/dbname start
+py mcd.py postgresql+psycopg2://user:password@host:port/dbname compare execution-id-as-retured-by-start-command load ./relative/path/to/load/models **/*.json
+py mcd.py postgresql+psycopg2://user:password@host:port/dbname compare execution-id-as-retured-by-start-command transform C:/absolute/path/to/transform/models group1/*.csv ./group2/**/*.sql
+py mcd.py postgresql+psycopg2://user:password@host:port/dbname finish execution-id-as-retured-by-start-command
 ```
 
 ### As a package
@@ -66,8 +71,10 @@ new-env\scripts\activate
 
 pip install -e git+git://github.com/PageUpPeopleOrg/model-change-detector.git#egg=mcd
 
-py -m mcd start postgresql+psycopg2://user:password@host:port/dbname
-py -m mcd finish postgresql+psycopg2://user:password@host:port/dbname execution-id-as-retured-by-start-command ./path/to/load/models ./path/to/transform/models
+py -m mcd postgresql+psycopg2://user:password@host:port/dbname start
+py -m mcd postgresql+psycopg2://user:password@host:port/dbname compare execution-id-as-retured-by-start-command load ./relative/path/to/load/models **/*.json
+py -m mcd postgresql+psycopg2://user:password@host:port/dbname compare execution-id-as-retured-by-start-command transform C:/absolute/path/to/transform/models group1/*.csv ./group2/**/*.sql
+py -m mcd postgresql+psycopg2://user:password@host:port/dbname finish execution-id-as-retured-by-start-command
 ```
 
 ## Setup
@@ -116,7 +123,7 @@ On Linux / Mac OS
 
 You should see the name of your virtual environment in brackets on your terminal line, e.g.:
 
-```
+```commandline
 C:\path\to\working\dir: new-env\scripts\activate
 (new-env) C:\path\to\working\dir: _
 ```

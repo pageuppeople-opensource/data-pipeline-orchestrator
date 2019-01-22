@@ -1,8 +1,10 @@
+from sqlalchemy import desc
+
+from modules import Shared
 from modules.BaseObject import BaseObject
+from modules.Shared import Constants
 from modules.entities.DataPipelineExecutionEntity import DataPipelineExecutionEntity
 from modules.entities.ModelChecksumEntity import ModelChecksumEntity
-from modules.Shared import Constants
-from modules import Shared
 
 
 class DataRepository(BaseObject):
@@ -23,21 +25,52 @@ class DataRepository(BaseObject):
         session.commit()
         return data_pipeline_execution
 
-    def finish_execution(self, execution_id, model_checksums_by_folders):
+    def get_last_successful_models(self, model_type):
+        last_successful_models = {}
+        session = self.session_maker()
+
+        last_successful_execution = session.query(DataPipelineExecutionEntity) \
+            .filter_by(status=Constants.DataPipelineExecutionStatus.COMPLETED_SUCCESSFULLY) \
+            .order_by(desc(DataPipelineExecutionEntity.last_updated_on)) \
+            .order_by(desc(DataPipelineExecutionEntity.created_on)) \
+            .first()
+
+        if last_successful_execution is None:
+            return last_successful_models
+
+        previous_model_checksums = session.query(ModelChecksumEntity) \
+            .filter_by(execution_id=last_successful_execution.id, type=model_type)
+
+        for model_checksum_entity in previous_model_checksums:
+            last_successful_models[model_checksum_entity.name] = model_checksum_entity.checksum
+
+        return last_successful_models
+
+    def save_execution_progress(self, execution_id, model_type, model_checksums):
+        session = self.session_maker()
+
+        data_pipeline_execution = session.query(DataPipelineExecutionEntity) \
+            .filter_by(id=execution_id) \
+            .one()
+        data_pipeline_execution.status = Constants.DataPipelineExecutionStatus.IN_PROGRESS
+
+        for model, checksum in sorted(model_checksums.items()):
+            model_checksum_entity = ModelChecksumEntity(execution_id=data_pipeline_execution.id,
+                                                        type=model_type,
+                                                        name=model,
+                                                        checksum=checksum)
+            session.add(model_checksum_entity)
+
+        session.commit()
+        return data_pipeline_execution
+
+    def finish_execution(self, execution_id):
         session = self.session_maker()
 
         data_pipeline_execution = session.query(DataPipelineExecutionEntity) \
             .filter_by(id=execution_id) \
             .one()
         data_pipeline_execution.status = Constants.DataPipelineExecutionStatus.COMPLETED_SUCCESSFULLY
-
-        for folder_name, model_checksums in model_checksums_by_folders.items():
-            for model, checksum in sorted(set(model_checksums.items())):
-                model_checksum = ModelChecksumEntity(execution_id=data_pipeline_execution.id,
-                                                     type=folder_name,
-                                                     name=model,
-                                                     checksum=checksum)
-                session.add(model_checksum)
 
         session.commit()
         return data_pipeline_execution
