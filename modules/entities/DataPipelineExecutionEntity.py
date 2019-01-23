@@ -38,7 +38,7 @@ class DataPipelineExecutionEntity(Shared.BaseEntity):
     status = Column('status',
                     String(50),
                     nullable=False,
-                    server_default=str(Constants.DataPipelineExecutionStatus.STARTED))
+                    server_default=str(Constants.DataPipelineExecutionStatus.INITIALISED))
 
     def __str__(self):
         return f'id={self.id}, ' \

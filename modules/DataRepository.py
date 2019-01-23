@@ -16,7 +16,7 @@ class DataRepository(BaseObject):
         engine.execute(f'CREATE SCHEMA IF NOT EXISTS {Constants.DATA_PIPELINE_EXECUTION_SCHEMA_NAME}')
         Shared.BaseEntity.metadata.create_all(engine)
 
-    def start_execution(self):
+    def initialise_execution(self):
         session = self.session_maker()
 
         data_pipeline_execution = DataPipelineExecutionEntity()
@@ -30,7 +30,7 @@ class DataRepository(BaseObject):
         session = self.session_maker()
 
         last_successful_execution = session.query(DataPipelineExecutionEntity) \
-            .filter_by(status=Constants.DataPipelineExecutionStatus.COMPLETED_SUCCESSFULLY) \
+            .filter_by(status=Constants.DataPipelineExecutionStatus.COMPLETED) \
             .order_by(desc(DataPipelineExecutionEntity.last_updated_on)) \
             .order_by(desc(DataPipelineExecutionEntity.created_on)) \
             .first()
@@ -52,7 +52,6 @@ class DataRepository(BaseObject):
         data_pipeline_execution = session.query(DataPipelineExecutionEntity) \
             .filter_by(id=execution_id) \
             .one()
-        data_pipeline_execution.status = Constants.DataPipelineExecutionStatus.IN_PROGRESS
 
         for model, checksum in sorted(model_checksums.items()):
             model_checksum_entity = ModelChecksumEntity(execution_id=data_pipeline_execution.id,
@@ -64,13 +63,13 @@ class DataRepository(BaseObject):
         session.commit()
         return data_pipeline_execution
 
-    def finish_execution(self, execution_id):
+    def complete_execution(self, execution_id):
         session = self.session_maker()
 
         data_pipeline_execution = session.query(DataPipelineExecutionEntity) \
             .filter_by(id=execution_id) \
             .one()
-        data_pipeline_execution.status = Constants.DataPipelineExecutionStatus.COMPLETED_SUCCESSFULLY
+        data_pipeline_execution.status = Constants.DataPipelineExecutionStatus.COMPLETED
 
         session.commit()
         return data_pipeline_execution

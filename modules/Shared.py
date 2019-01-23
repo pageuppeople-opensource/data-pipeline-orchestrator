@@ -10,9 +10,8 @@ class Constants:
     DATA_PIPELINE_EXECUTION_SCHEMA_NAME = 'data_pipeline'
 
     class DataPipelineExecutionStatus:
-        STARTED = 'STARTED'
-        IN_PROGRESS = 'IN PROGRESS'
-        COMPLETED_SUCCESSFULLY = 'SUCCESSFUL'
+        INITIALISED = 'INITIALISED'
+        COMPLETED = 'COMPLETED'
 
 
 _logLevelStrings = [logging.getLevelName(logging.CRITICAL),

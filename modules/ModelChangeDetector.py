@@ -5,8 +5,8 @@ from modules import Shared
 from modules.BaseObject import BaseObject
 from modules.Shared import Constants
 from modules.commands.CompareCommand import CompareCommand
-from modules.commands.FinishCommand import FinishCommand
-from modules.commands.StartCommand import StartCommand
+from modules.commands.CompleteCommand import CompleteCommand
+from modules.commands.InitialiseCommand import InitialiseCommand
 
 
 class ModelChangeDetector(BaseObject):
@@ -21,15 +21,15 @@ class ModelChangeDetector(BaseObject):
 
         self.args.func()
 
-    def __process_start_command(self):
-        StartCommand(self.args.db_connection_string).execute()
+    def __process_init_command(self):
+        InitialiseCommand(self.args.db_connection_string).execute()
 
     def __process_compare_command(self):
         CompareCommand(self.args.db_connection_string, self.args.execution_id, self.args.model_type,
                        self.args.base_path, self.args.model_patterns).execute()
 
-    def __process_finish_command(self):
-        FinishCommand(self.args.db_connection_string, self.args.execution_id).execute()
+    def __process_complete_command(self):
+        CompleteCommand(self.args.db_connection_string, self.args.execution_id).execute()
 
     def __get_arguments(self):
         parser = argparse.ArgumentParser(description=Constants.APP_NAME,
@@ -46,8 +46,8 @@ class ModelChangeDetector(BaseObject):
 
         subparsers = parser.add_subparsers(title='commands', metavar='', dest='command')
 
-        start_command_parser = subparsers.add_parser('start', help='starts a new data pipeline execution')
-        start_command_parser.set_defaults(func=self.__process_start_command)
+        init_command_parser = subparsers.add_parser('init', help='initialises a new data pipeline execution')
+        init_command_parser.set_defaults(func=self.__process_init_command)
 
         compare_command_parser = subparsers.add_parser('compare', help='compares given models with those of the last '
                                                                        'successfully processed data pipeline '
@@ -56,7 +56,7 @@ class ModelChangeDetector(BaseObject):
         compare_command_parser.set_defaults(func=self.__process_compare_command)
         compare_command_parser.add_argument('execution_id',
                                             metavar='execution-id',
-                                            help='data pipeline execution id as received using \'start\' command')
+                                            help='data pipeline execution id as received using \'init\' command')
         compare_command_parser.add_argument('model_type',
                                             metavar='model-type',
                                             help='a string name for the type of models to compare. used to group '
@@ -72,11 +72,11 @@ class ModelChangeDetector(BaseObject):
                                                  '*.txt, **/*.json, ./path/to/some_models/**/*.csv, '
                                                  'path/to/some/more/related/models/**/*.sql')
 
-        finish_command_parser = subparsers.add_parser('finish', help='finishes the given data pipeline execution.')
-        finish_command_parser.set_defaults(func=self.__process_finish_command)
-        finish_command_parser.add_argument('execution_id',
+        complete_command_parser = subparsers.add_parser('complete', help='completees the given data pipeline execution.')
+        complete_command_parser.set_defaults(func=self.__process_complete_command)
+        complete_command_parser.add_argument('execution_id',
                                            metavar='execution-id',
-                                           help='data pipeline execution id as received using \'start\' command')
+                                           help='data pipeline execution id as received using \'init\' command')
 
         args = parser.parse_args()
 

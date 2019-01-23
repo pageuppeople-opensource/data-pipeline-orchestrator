@@ -15,14 +15,14 @@ py mcd.py [options] <command> [command-parameters]
   - `--log-level | -l`: choose program's logging level, from CRITICAL, ERROR, WARNING, INFO, DEBUG; default is INFO.
 - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
 - `command` is the function to be performed by the utility. The currently supported values are:
-  - `start`: Marks the start of a new execution by creating a record for the same in the given database. Returns an `execution-id` which is a GUID identifier of the new execution.
-  - `compare`: Compares & persists checksums of the given models against those of the last successful execution. Returns comma-separated string of changed model names.
-    - `execution-id`: a GUID identifier of an existing data pipeline execution as returned by the `start` command.
+  - `init`: Marks the start of a new execution by creating a record for the same in the given database. Returns an `execution-id` which is a GUID identifier of the new execution.
+  - `compare`: Compares & persists SHA256-hashed checksums of the given models against those of the last successful execution. Returns comma-separated string of changed model names.
+    - `execution-id`: a GUID identifier of an existing data pipeline execution as returned by the `init` command.
     - `model-type`: type of models being processed e.g.: `load`, `transform`, etc. this `model-type` is used to group the model checksums by and used to find and compare older ones.
     - `base-path`: absolute or relative path to the models e.g.: `./load`, `/home/local/load`, `C:/path/to/load`
     - `model-patterns`: path-based patterns _(relative to `base-path`)_ to different models with extensions. models within a model-type must be named uniquely regardless of their file extension. e.g.: `*.txt`, `**/*.txt`, `./relative/path/to/some_models/**/*.csv`, `relative/path/to/some/more/related/models/**/*.sql`
-  - `finish`: Marks the completion of an existing execution by updating a record for the same in the given database. Also, calculates and persists SHA256-hashed checksums of all model files and their types _(as derived from the root folder name)_. Returns nothing unless there's an error.
-    - `execution-id`: a GUID identifier of an existing data pipeline execution as returned by the `start` command.
+  - `complete`: Marks the completion of an existing execution by updating a record for the same in the given database. Returns nothing unless there's an error.
+    - `execution-id`: a GUID identifier of an existing data pipeline execution as returned by the `init` command.
 
 To get help,use:
 
@@ -45,10 +45,10 @@ new-env\scripts\activate
 
 py -m pip install -r requirements.txt
 
-py mcd.py postgresql+psycopg2://user:password@host:port/dbname start
-py mcd.py postgresql+psycopg2://user:password@host:port/dbname compare execution-id-as-retured-by-start-command load ./relative/path/to/load/models **/*.json
-py mcd.py postgresql+psycopg2://user:password@host:port/dbname compare execution-id-as-retured-by-start-command transform C:/absolute/path/to/transform/models group1/*.csv ./group2/**/*.sql
-py mcd.py postgresql+psycopg2://user:password@host:port/dbname finish execution-id-as-retured-by-start-command
+py mcd.py postgresql+psycopg2://user:password@host:port/dbname init
+py mcd.py postgresql+psycopg2://user:password@host:port/dbname compare execution-id-as-retured-by-init-command load ./relative/path/to/load/models **/*.json
+py mcd.py postgresql+psycopg2://user:password@host:port/dbname compare execution-id-as-retured-by-init-command transform C:/absolute/path/to/transform/models group1/*.csv ./group2/**/*.sql
+py mcd.py postgresql+psycopg2://user:password@host:port/dbname complete execution-id-as-retured-by-init-command
 ```
 
 ### As a package
@@ -71,10 +71,10 @@ new-env\scripts\activate
 
 pip install -e git+git://github.com/PageUpPeopleOrg/model-change-detector.git#egg=mcd
 
-py -m mcd postgresql+psycopg2://user:password@host:port/dbname start
-py -m mcd postgresql+psycopg2://user:password@host:port/dbname compare execution-id-as-retured-by-start-command load ./relative/path/to/load/models **/*.json
-py -m mcd postgresql+psycopg2://user:password@host:port/dbname compare execution-id-as-retured-by-start-command transform C:/absolute/path/to/transform/models group1/*.csv ./group2/**/*.sql
-py -m mcd postgresql+psycopg2://user:password@host:port/dbname finish execution-id-as-retured-by-start-command
+py -m mcd postgresql+psycopg2://user:password@host:port/dbname init
+py -m mcd postgresql+psycopg2://user:password@host:port/dbname compare execution-id-as-retured-by-init-command load ./relative/path/to/load/models **/*.json
+py -m mcd postgresql+psycopg2://user:password@host:port/dbname compare execution-id-as-retured-by-init-command transform C:/absolute/path/to/transform/models group1/*.csv ./group2/**/*.sql
+py -m mcd postgresql+psycopg2://user:password@host:port/dbname complete execution-id-as-retured-by-init-command
 ```
 
 ## Setup

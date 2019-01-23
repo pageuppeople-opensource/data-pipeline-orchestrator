@@ -19,7 +19,7 @@ class CompareCommand(BaseCommand):
 
         current_model_checksums = {}
         for model_pattern in self._model_patterns:
-            for model_file in model_folder.rglob(model_pattern):
+            for model_file in model_folder.glob(model_pattern):
                 if model_file.is_file():
                     current_model_checksums[model_file.stem] = self.__get_file_checksum(model_file)
 
