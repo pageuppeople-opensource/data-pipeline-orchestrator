@@ -16,7 +16,7 @@ py mcd.py [options] <command> [command-parameters]
 - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
 - `command` is the function to be performed by the utility. The currently supported values are:
   - `init`: Marks the start of a new execution by creating a record for the same in the given database. Returns an `execution-id` which is a GUID identifier of the new execution.
-  - `compare`: Compares & persists SHA256-hashed checksums of the given models against those of the last successful execution. Returns comma-separated string of changed model names.
+  - `compare`: Compares & persists SHA256-hashed checksums of the given models against those of the last successful execution. Returns space-separated string of changed model names.
     - `execution-id`: a GUID identifier of an existing data pipeline execution as returned by the `init` command.
     - `model-type`: type of models being processed e.g.: `load`, `transform`, etc. this `model-type` is used to group the model checksums by and used to find and compare older ones.
     - `base-path`: absolute or relative path to the models e.g.: `./load`, `/home/local/load`, `C:/path/to/load`
