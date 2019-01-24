@@ -1,5 +1,8 @@
 import logging
 import argparse
+from sqlalchemy.ext.declarative import declarative_base
+
+BaseEntity = declarative_base()
 
 
 class Constants:
@@ -7,8 +10,8 @@ class Constants:
     DATA_PIPELINE_EXECUTION_SCHEMA_NAME = 'data_pipeline'
 
     class DataPipelineExecutionStatus:
-        STARTED = 'STARTED'
-        COMPLETED_SUCCESSFULLY = 'SUCCESSFUL'
+        INITIALISED = 'INITIALISED'
+        COMPLETED = 'COMPLETED'
 
 
 _logLevelStrings = [logging.getLevelName(logging.CRITICAL),

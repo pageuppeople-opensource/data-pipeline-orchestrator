@@ -108,3 +108,5 @@ venv.bak/
 
 # JetBrains
 .idea/
+
+test-models/
