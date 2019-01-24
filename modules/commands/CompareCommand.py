@@ -10,7 +10,7 @@ class CompareCommand(BaseCommand):
         self._model_type = model_type
         self._base_path = base_path
         self._model_patterns = model_patterns
-        self._changed_models_separator = ' '
+        self._changed_models_separator = ','
 
     def execute(self):
         model_folder = Path(self._base_path)
