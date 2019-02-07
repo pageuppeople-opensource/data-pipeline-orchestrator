@@ -2,7 +2,7 @@
 
 ## About
 
-A utility that detects changes in models.
+A utility that persists state of a data pipeline execution and uses them to detect changes in models.
 
 ## Usage
 
