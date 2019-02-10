@@ -6,5 +6,5 @@ setup(name='mcd',
       install_requires=[
           'psycopg2==2.7.7',
           'SQLAlchemy==1.2.17'
-        ]
+      ]
       )

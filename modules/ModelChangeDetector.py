@@ -72,11 +72,12 @@ class ModelChangeDetector(BaseObject):
                                                  '*.txt, **/*.json, ./path/to/some_models/**/*.csv, '
                                                  'path/to/some/more/related/models/**/*.sql')
 
-        complete_command_parser = subparsers.add_parser('complete', help='completees the given data pipeline execution.')
+        complete_command_parser = subparsers.add_parser(
+            'complete', help='completees the given data pipeline execution.')
         complete_command_parser.set_defaults(func=self.__process_complete_command)
         complete_command_parser.add_argument('execution_id',
-                                           metavar='execution-id',
-                                           help='data pipeline execution id as received using \'init\' command')
+                                             metavar='execution-id',
+                                             help='data pipeline execution id as received using \'init\' command')
 
         args = parser.parse_args()
 

@@ -23,7 +23,8 @@ class CompareCommand(BaseCommand):
                 if model_file.is_file():
                     current_model_checksums[model_file.stem] = self.__get_file_checksum(model_file)
 
-        data_pipeline_execution = self.repository.save_execution_progress(self._execution_id, self._model_type, current_model_checksums)
+        data_pipeline_execution = self.repository.save_execution_progress(
+            self._execution_id, self._model_type, current_model_checksums)
         self.logger.debug(f'Comparing data_pipeline_execution = ${str(data_pipeline_execution)}')
 
         previous_model_checksums = self.repository.get_last_successful_models(self._model_type)
