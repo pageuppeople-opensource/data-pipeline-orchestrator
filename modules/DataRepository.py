@@ -25,6 +25,14 @@ class DataRepository(BaseObject):
         session.commit()
         return data_pipeline_execution
 
+    def get_last_successful_execution(self):
+        session = self.session_maker()
+        return session.query(DataPipelineExecutionEntity) \
+            .filter_by(status=Constants.DataPipelineExecutionStatus.COMPLETED) \
+            .order_by(desc(DataPipelineExecutionEntity.last_updated_on)) \
+            .order_by(desc(DataPipelineExecutionEntity.created_on)) \
+            .first()
+
     def get_last_successful_models(self, model_type):
         last_successful_models = {}
         session = self.session_maker()
