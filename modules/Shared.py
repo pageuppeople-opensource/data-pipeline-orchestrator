@@ -27,10 +27,10 @@ def configure_root_logger(log_level):
     # get the root logger
     logger = logging.getLogger()
 
-    # with the given log level
-    logger.setLevel(logging.DEBUG)
+    # set the given log level
+    logger.setLevel(log_level)
 
-    # and one handler, at the same log level
+    # and one handler, at the same log level, with appropriate formatting
     console_stream_handler = logging.StreamHandler()
     console_stream_handler.setLevel(log_level)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
