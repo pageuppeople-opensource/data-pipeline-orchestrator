@@ -4,5 +4,9 @@ install_deps:
 	pipenv install --dev
 
 # Run unit tests
-test:
+test_unit:
 	pipenv run pytest
+
+# Run integration tests
+test_integration:
+	./tests/integration/test_integration.sh
