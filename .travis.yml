@@ -8,4 +8,6 @@ before_install:
   - docker run -e POSTGRES_PASSWORD=travisci -d postgres
 
 install: make install_deps
-script: make test
+script:
+  - make test
+  - ./test.sh
