@@ -7,7 +7,7 @@ loadModels='./tests/integration/models/load'
 mcd='pipenv run python mcd.py postgresql+psycopg2://postgres:travisci@localhost:5432/postgres'
 
 ## Create stub load models
-mkdir $loadModels
+mkdir -p $loadModels
 echo 'loadmodel1' > "$loadModels/load_model_1.json"
 
 # Begin new execution
