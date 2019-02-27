@@ -4,6 +4,7 @@ import logging
 from modules import Shared
 from modules.BaseObject import BaseObject
 from modules.Shared import Constants
+from modules.commands.GetExecutionsLastUpdateTimestampCommand import GetExecutionsLastUpdateTimestampCommand
 from modules.commands.GetLastSuccessfulExecutionCommand import GetLastSuccessfulExecutionCommand
 from modules.commands.CompareCommand import CompareCommand
 from modules.commands.CompleteCommand import CompleteCommand
@@ -24,6 +25,9 @@ class ModelChangeDetector(BaseObject):
 
     def __process_init_command(self):
         InitialiseCommand(self.args.db_connection_string).execute()
+
+    def __process_get_executions_last_updated_timestamp_command(self):
+        GetExecutionsLastUpdateTimestampCommand(self.args.db_connection_string, self.args.execution_id).execute()
 
     def __process_get_last_successful_execution_command(self):
         GetLastSuccessfulExecutionCommand(self.args.db_connection_string).execute()
@@ -53,14 +57,22 @@ class ModelChangeDetector(BaseObject):
         init_command_parser = subparsers.add_parser('init', help='initialises a new data pipeline execution')
         init_command_parser.set_defaults(func=self.__process_init_command)
 
-        get_last_successful_execution_command_parser = subparsers.add_parser('get-last-successful-execution',
-                                                                             help='returns execution id of the last '
-                                                                                  'successful execution, if any. if no '
-                                                                                  'such execution is found, then '
-                                                                                  'returns an empty string.'
-                                                                                  'command')
+        get_last_successful_execution_command_parser = \
+            subparsers.add_parser('get-last-successful-execution',
+                                  help='returns execution id of the last successful execution, if any. '
+                                       'if no such execution is found, then returns an empty string.')
         get_last_successful_execution_command_parser.set_defaults(
             func=self.__process_get_last_successful_execution_command)
+
+        get_executions_last_updated_timestamp_command_parser = \
+            subparsers.add_parser('get-executions-last-updated-timestamp',
+                                  help='returns the last-updated-on timestamp-with-timezone of a given `execution-id`. '
+                                       'raises error if given `execution-id` is invalid.')
+        get_executions_last_updated_timestamp_command_parser.set_defaults(
+            func=self.__process_get_executions_last_updated_timestamp_command)
+        get_executions_last_updated_timestamp_command_parser.add_argument('execution_id',
+                                                                       metavar='execution-id',
+                                                                       help='an existing data pipeline execution id')
 
         compare_command_parser = subparsers.add_parser('compare', help='compares given models with those of the last '
                                                                        'successfully processed data pipeline '
