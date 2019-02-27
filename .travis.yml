@@ -5,7 +5,7 @@ python: 3.7
 services: docker
 before_install:
   - docker pull postgres
-  - docker run -e POSTGRES_PASSWORD=travisci -d postgres
+  - docker run -p 5432:5432 -e POSTGRES_PASSWORD=travisci -d postgres
 
 install: make install_deps
 script:
