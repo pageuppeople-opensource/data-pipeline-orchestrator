@@ -1,5 +1,5 @@
 # Install dependencies
-init:
+install_deps:
 	pip install pipenv --upgrade
 	pipenv install --dev
 
