@@ -11,7 +11,7 @@ executionId=$($mcd init)
 $mcd complete $executionId
 
 # Get last successful execution
-lastSuccessfulExecutionId = $($mcd get-last-successful-execution)
+lastSuccessfulExecutionId=$($mcd get-last-successful-execution)
 if [ $lastSuccessfulExecutionId != $executionId ]
 then
     exit 1
