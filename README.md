@@ -17,7 +17,7 @@ py mcd.py [options] <command> [command-parameters]
 - `command` is the function to be performed by the utility. The currently supported values are:
   - `init`: Marks the start of a new execution by creating a record for the same in the given database. Returns an `execution-id` which is a GUID identifier of the new execution.
   - `get-last-successful-execution`: Finds the last successful data pipeline execution. Returns an `execution-id` which is a GUID identifier of the new execution, if found; else returns and empty string.
-  - `get-executions-last-updated-timestamp`: Returns the `last-updated-on` timestamp with timezone of the given `execution-id`. Raises error if given `execution-id` is invalid.
+  - `get-execution-last-updated-timestamp`: Returns the `last-updated-on` timestamp with timezone of the given `execution-id`. Raises error if given `execution-id` is invalid.
     - `execution-id`: a GUID identifier of an existing data pipeline execution.
   - `compare`: Compares & persists SHA256-hashed checksums of the given models against those of the last successful execution. Returns comma-separated string of changed model names.
     - `execution-id`: a GUID identifier of an existing data pipeline execution as returned by the `init` command.
