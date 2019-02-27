@@ -9,7 +9,7 @@ class GetExecutionsLastUpdateTimestampCommand(BaseCommand):
 
     def execute(self):
         data_pipeline_execution = self.repository.get_execution(self._execution_id)
-        self.logger.debug(f'Found requested data_pipeline_execution to be {str(data_pipeline_execution)}')
+        self.logger.debug(f'Found requested data_pipeline_execution to be {data_pipeline_execution}')
         if data_pipeline_execution is None:
             raise ValueError(self._execution_id)
         print(data_pipeline_execution.last_updated_on.isoformat())
