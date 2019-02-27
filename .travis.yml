@@ -9,5 +9,5 @@ before_install:
 
 install: make install_deps
 script:
-  - make test
-  - ./test.sh
+  - make test_unit
+  - make test_integration
