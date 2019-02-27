@@ -1,4 +1,5 @@
 from modules.commands.BaseCommand import BaseCommand
+from datetime import datetime
 
 
 class GetExecutionsLastUpdateTimestampCommand(BaseCommand):
@@ -11,4 +12,4 @@ class GetExecutionsLastUpdateTimestampCommand(BaseCommand):
         self.logger.debug(f'Found requested data_pipeline_execution to be {str(data_pipeline_execution)}')
         if data_pipeline_execution is None:
             raise ValueError(self._execution_id)
-        print(str(data_pipeline_execution.last_updated_on))
+        print(data_pipeline_execution.last_updated_on.isoformat())
