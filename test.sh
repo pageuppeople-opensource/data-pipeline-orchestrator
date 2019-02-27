@@ -1,2 +1,2 @@
 executionId=$(pipenv run python mcd.py postgresql+psycopg2://postgres:travisci@localhost:5432/postgres init)
-pipenv run python mcd.py postgresql+psycopg2://postgres:travisci@localhost:5432/postgres complete $executionId
+pipenv run python mcd.py postgresql+psycopg2://postgres:travisci@localhost:5432/postgres complete testFailure
