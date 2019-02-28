@@ -38,7 +38,7 @@ CompleteAndAssert () {
 }
 
 ## Create stub load models
-echo "Creating stub load models"
+echo "Creating stub load models: load_model_1.json, load_model_2.json"
 mkdir -p $loadModels
 echo "load_model_1" > "$loadModels/load_model_1.json"
 echo "load_model_2" > "$loadModels/load_model_2.json"
@@ -49,10 +49,12 @@ InitExecution
 CompareAndAssert "*"
 CompleteAndAssert
 
+# Modify load_model_1
+echo "Modifying load_model_1"
+echo "" > "$loadModels/load_model_1.json"
+
 # Execution 2
 echo "Beginning execution #2"
 InitExecution
-echo "Modifying load_model_1"
-echo "" > "$loadModels/load_model_1.json"
 CompareAndAssert "load_model_1"
 CompleteAndAssert
