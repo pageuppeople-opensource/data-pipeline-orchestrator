@@ -53,7 +53,7 @@ class DataRepository(BaseObject):
         results = session.query(ModelChecksumEntity) \
             .filter_by(execution_id=execution_id, type=model_type)
         session.close()
-        return [r for r in results]
+        return results.all()
 
     def save_execution_models(self, execution_id, model_type, model_checksums):
         session = self.session_maker()
