@@ -17,7 +17,7 @@ CompareAndAssert () {
     changedModels=$($mcd compare $executionId load $loadModels *.json)
 
     echo 'Assert changed load models'
-    if [ $changedModels != "$1" ]
+    if [ "$changedModels" != "$1" ]
     then
         echo 'ERROR: expected '$1', actual '$changedModels''
         exit 1
