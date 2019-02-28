@@ -46,7 +46,7 @@ echo 'load_model_2' > "$loadModels/load_model_2.json"
 # Execution 1
 echo 'Beginning execution #1'
 InitExecution
-CompareAndAssert '*'
+CompareAndAssert 'testfailure'
 CompleteAndAssert
 
 # Execution 2
