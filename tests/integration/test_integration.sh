@@ -6,11 +6,11 @@ set -e
 loadModels='./tests/integration/models/load'
 mcd='pipenv run python mcd.py postgresql+psycopg2://postgres:travisci@localhost:5432/postgres'
 
-function initExecution () {
+function initExecution {
     executionId=$($mcd init)
 }
 
-function compareAndAssert () {
+function compareAndAssert {
     echo 'Comparing load models'
     changedModels=$($mcd compare $executionId load $loadModels *.json)
 
@@ -22,7 +22,7 @@ function compareAndAssert () {
     fi
 }
 
-function completeAndAssert () {
+function completeAndAssert {
     echo 'Completing execution'
     $mcd complete $executionId
 
