@@ -5,7 +5,7 @@ set -e
 
 # Bootstrap
 ## Aliases
-loadModels="./tests/integration/models/load"
+loadModelDirectory="./tests/integration/models/load"
 mcd="pipenv run python mcd.py postgresql+psycopg2://postgres:travisci@localhost:5432/postgres"
 
 InitExecution () {
@@ -14,7 +14,7 @@ InitExecution () {
 
 CompareAndAssert () {
     echo "Comparing load models"
-    changedModels=$($mcd compare $executionId load $loadModels *.json)
+    changedModels=$($mcd compare $executionId load $loadModelDirectory *.json)
 
     echo "Assert changed load models"
     if [ "$changedModels" != "$1" ]
@@ -39,9 +39,9 @@ CompleteAndAssert () {
 
 ## Create stub load models
 echo "Creating stub load models: load_model_1.json, load_model_2.json"
-mkdir -p $loadModels
-echo "load_model_1" > "$loadModels/load_model_1.json"
-echo "load_model_2" > "$loadModels/load_model_2.json"
+mkdir -p $loadModelDirectory
+echo "load_model_1" > "$loadModelDirectory/load_model_1.json"
+echo "load_model_2" > "$loadModelDirectory/load_model_2.json"
 
 # Execution 1
 echo "Beginning execution #1"
@@ -51,7 +51,7 @@ CompleteAndAssert
 
 # Modify load_model_1
 echo "Modifying load_model_1"
-echo "" > "$loadModels/load_model_1.json"
+echo "" > "$loadModelDirectory/load_model_1.json"
 
 # Execution 2
 echo "Beginning execution #2"
