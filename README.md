@@ -1,5 +1,7 @@
 # Model Change Detector
 
+[![Build Status](https://travis-ci.com/PageUpPeopleOrg/model-change-detector.svg?branch=master)](https://travis-ci.com/PageUpPeopleOrg/model-change-detector)
+
 ## About
 
 A utility that persists state of a data pipeline execution and uses them to detect changes in models.
