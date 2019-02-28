@@ -25,6 +25,12 @@ class DataRepository(BaseObject):
         session.commit()
         return data_pipeline_execution
 
+    def get_execution(self, execution_id):
+        session = self.session_maker()
+        return session.query(DataPipelineExecutionEntity) \
+            .filter_by(id=execution_id) \
+            .first()
+
     def get_last_successful_execution(self):
         session = self.session_maker()
         return session.query(DataPipelineExecutionEntity) \
