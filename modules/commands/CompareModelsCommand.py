@@ -11,28 +11,24 @@ class CompareModelsCommand(BaseCommand):
         self._changed_models_separator = ' '
 
     def execute(self):
-        old_models = [] if self._previous_execution_id == Constants.NO_LAST_SUCCESSFUL_EXECUTION \
+        previous_models_list = [] if self._previous_execution_id == Constants.NO_LAST_SUCCESSFUL_EXECUTION \
             else self.repository.get_execution_models(self._previous_execution_id, self._model_type)
-        new_models = self.repository.get_execution_models(self._current_execution_id, self._model_type)
+        current_models_list = self.repository.get_execution_models(self._current_execution_id, self._model_type)
 
-        # kept for later validation
-        # if len(old_models) == 0:
-        #     self.logger.debug(f'Changed models: ALL')
-        #     print('*')
-        #     return
+        previous_model_checksums = {}
+        for model in previous_models_list:
+            previous_model_checksums[model.name] = model.checksum
 
-        old_model_checksums = {}
-        for model in old_models:
-            old_model_checksums[model.name] = model.checksum
+        current_model_checksums = {}
+        for model in current_models_list:
+            current_model_checksums[model.name] = model.checksum
 
-        new_model_checksums = {}
-        for model in new_models:
-            new_model_checksums[model.name] = model.checksum
+        changed_models_list = []
+        for model, new_checksum in current_model_checksums.items():
+            if model not in previous_model_checksums or previous_model_checksums[model] != new_checksum:
+                changed_models_list.append(model)
 
-        changed_models = []
-        for model, new_checksum in new_model_checksums.items():
-            if model not in old_model_checksums or old_model_checksums[model] != new_checksum:
-                changed_models.append(model)
+        self.output(changed_models_list)
 
-        print(self._changed_models_separator.join(changed_models))
-        self.logger.debug(f'Changed models: \'${str(changed_models)}\'')
+    def output(self, changed_models_list):
+        print(self._changed_models_separator.join(changed_models_list))

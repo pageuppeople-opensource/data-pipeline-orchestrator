@@ -11,13 +11,13 @@ class GetExecutionLastUpdateTimestampCommand(BaseCommand):
         if self._execution_id == Constants.NO_LAST_SUCCESSFUL_EXECUTION:
             self.logger.debug('Received no execution id, so returning current database datetime with timezone')
             self.output(self.repository.get_current_db_datetime_with_timezone())
-            return 
+            return
 
         data_pipeline_execution = self.repository.get_execution(self._execution_id)
         if data_pipeline_execution is None:
             raise ValueError(self._execution_id)
         self.output(data_pipeline_execution.last_updated_on)
-        return 
+        return
 
     def output(self, timestamp):
         print(timestamp.isoformat())
