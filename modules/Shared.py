@@ -8,11 +8,19 @@ BaseEntity = declarative_base()
 class Constants:
     APP_NAME = 'model-change-detector'
     DATA_PIPELINE_EXECUTION_SCHEMA_NAME = 'data_pipeline'
+    NO_LAST_SUCCESSFUL_EXECUTION = 'NO_LAST_SUCCESSFUL_EXECUTION'
 
     class DataPipelineExecutionStatus:
         INITIALISED = 'INITIALISED'
+        IN_PROGRESS = 'IN_PROGRESS'
         COMPLETED = 'COMPLETED'
 
+    class ModelType:
+        LOAD = 'LOAD'
+        TRANSFORM = 'TRANSFORM'
+
+
+MODEL_TYPES = [Constants.ModelType.LOAD, Constants.ModelType.TRANSFORM]
 
 _logLevelStrings = [logging.getLevelName(logging.CRITICAL),
                     logging.getLevelName(logging.ERROR),
@@ -50,7 +58,7 @@ def get_default_arguments():
                         type=get_log_level_int_from_string,
                         nargs='?',
                         help=f'choose program\'s logging level, from {", ".join(_logLevelStrings)}; '
-                             f'default is {_defaultLogLevelString}')
+                        f'default is {_defaultLogLevelString}')
 
     return parser
 

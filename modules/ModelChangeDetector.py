@@ -4,11 +4,12 @@ import logging
 from modules import Shared
 from modules.BaseObject import BaseObject
 from modules.Shared import Constants
-from modules.commands.GetExecutionLastUpdateTimestampCommand import GetExecutionLastUpdateTimestampCommand
+from modules.commands.InitialiseExecutionCommand import InitialiseExecutionCommand
 from modules.commands.GetLastSuccessfulExecutionCommand import GetLastSuccessfulExecutionCommand
-from modules.commands.CompareCommand import CompareCommand
-from modules.commands.CompleteCommand import CompleteCommand
-from modules.commands.InitialiseCommand import InitialiseCommand
+from modules.commands.GetExecutionLastUpdateTimestampCommand import GetExecutionLastUpdateTimestampCommand
+from modules.commands.PersistModelsCommand import PersistModelsCommand
+from modules.commands.CompareModelsCommand import CompareModelsCommand
+from modules.commands.CompleteExecutionCommand import CompleteExecutionCommand
 
 
 class ModelChangeDetector(BaseObject):
@@ -23,8 +24,8 @@ class ModelChangeDetector(BaseObject):
 
         self.args.func()
 
-    def __process_init_command(self):
-        InitialiseCommand(self.args.db_connection_string).execute()
+    def __process_init_execution_command(self):
+        InitialiseExecutionCommand(self.args.db_connection_string).execute()
 
     def __process_get_execution_last_updated_timestamp_command(self):
         GetExecutionLastUpdateTimestampCommand(self.args.db_connection_string, self.args.execution_id).execute()
@@ -32,12 +33,20 @@ class ModelChangeDetector(BaseObject):
     def __process_get_last_successful_execution_command(self):
         GetLastSuccessfulExecutionCommand(self.args.db_connection_string).execute()
 
-    def __process_compare_command(self):
-        CompareCommand(self.args.db_connection_string, self.args.execution_id, self.args.model_type,
-                       self.args.base_path, self.args.model_patterns).execute()
+    def __process_save_models_command(self):
+        PersistModelsCommand(
+            self.args.db_connection_string, self.args.execution_id, self.args.model_type.upper(),
+            self.args.base_path, self.args.model_patterns
+        ).execute()
 
-    def __process_complete_command(self):
-        CompleteCommand(self.args.db_connection_string, self.args.execution_id).execute()
+    def __process_compare_models_command(self):
+        CompareModelsCommand(
+            self.args.db_connection_string, self.args.previous_execution_id, self.args.current_execution_id,
+            self.args.model_type.upper()
+        ).execute()
+
+    def __process_complete_execution_command(self):
+        CompleteExecutionCommand(self.args.db_connection_string, self.args.execution_id).execute()
 
     def __get_arguments(self):
         parser = argparse.ArgumentParser(
@@ -55,8 +64,9 @@ class ModelChangeDetector(BaseObject):
 
         subparsers = parser.add_subparsers(title='commands', metavar='', dest='command')
 
-        init_command_parser = subparsers.add_parser('init', help='initialises a new data pipeline execution')
-        init_command_parser.set_defaults(func=self.__process_init_command)
+        init_execution_command_parser = subparsers.add_parser(
+            'init-execution', help='initialises a new data pipeline execution')
+        init_execution_command_parser.set_defaults(func=self.__process_init_execution_command)
 
         get_last_successful_execution_command_parser = subparsers.add_parser(
             'get-last-successful-execution',
@@ -67,7 +77,7 @@ class ModelChangeDetector(BaseObject):
 
         get_execution_last_updated_timestamp_command_parser = subparsers.add_parser(
             'get-execution-last-updated-timestamp',
-            help='returns the last-updated-on timestamp-with-timezone of a given execution-id. '
+            help='returns the last-updated-on timestamp (datetime with timezone) of a given execution-id. '
                  'raises error if given execution-id is invalid.')
         get_execution_last_updated_timestamp_command_parser.set_defaults(
             func=self.__process_get_execution_last_updated_timestamp_command)
@@ -76,35 +86,55 @@ class ModelChangeDetector(BaseObject):
             metavar='execution-id',
             help='an existing data pipeline execution id')
 
-        compare_command_parser = subparsers.add_parser(
-            'compare',
-            help='compares given models with those of the last successfully processed data pipeline execution. '
-                 'also persists given models against the given data pipeline execution.')
-        compare_command_parser.set_defaults(func=self.__process_compare_command)
-        compare_command_parser.add_argument(
+        persist_models_command_parser = subparsers.add_parser(
+            'persist-models',
+            help='Saves models of the given \'model-type\' within the given \'execution-id\' '
+                 'by persisting hashed checksums of the given models.')
+        persist_models_command_parser.set_defaults(func=self.__process_save_models_command)
+        persist_models_command_parser.add_argument(
             'execution_id',
             metavar='execution-id',
-            help='data pipeline execution id as received using \'init\' command')
-        compare_command_parser.add_argument(
+            help='identifier of an existing data pipeline execution, ideally as returned by the \'init\' command.')
+        persist_models_command_parser.add_argument(
             'model_type',
             metavar='model-type',
-            help='a string name for the type of models to compare. used to group models between various calls to this '
-                 'command for same data pipeline execution. e.g. load, transform')
-        compare_command_parser.add_argument(
+            help=f'type of models being processed, choose from {", ".join(Shared.MODEL_TYPES)}.')
+        persist_models_command_parser.add_argument(
             'base_path',
             metavar='base-path',
-            help='absolute or relative path to the base directory of all models')
-        compare_command_parser.add_argument(
+            help='absolute or relative path to the base directory of all models'
+                 'e.g.: ./load, /home/local/transform, C:/path/to/models')
+        persist_models_command_parser.add_argument(
             'model_patterns',
             metavar='model-patterns',
             nargs='+',
-            help='one or more unix-style search patterns for model files. '
+            help='one or more unix-style search patterns (relative to \'base-path\') for model files. '
+                 'models within a model-type must be named uniquely regardless of their file extension.'
                  'e.g.: *.txt, **/*.json, ./path/to/some_models/**/*.csv, path/to/some/more/related/models/**/*.sql')
 
-        complete_command_parser = subparsers.add_parser(
-            'complete', help='completes the given data pipeline execution.')
-        complete_command_parser.set_defaults(func=self.__process_complete_command)
-        complete_command_parser.add_argument(
+        compare_models_command_parser = subparsers.add_parser(
+            'compare-models',
+            help='Compares the hashed checksums of models between two executions. '
+                 'Returns comma-separated string of changed model names.')
+        compare_models_command_parser.set_defaults(func=self.__process_compare_models_command)
+        compare_models_command_parser.add_argument(
+            'previous_execution_id',
+            metavar='previous-execution-id',
+            help='identifier of an existing data pipeline execution, '
+                 'ideally as returned by the \'get-last-successful-execution\' command.')
+        compare_models_command_parser.add_argument(
+            'current_execution_id',
+            metavar='current-execution-id',
+            help='identifier of an existing data pipeline execution, ideally as returned by the \'init\' command.')
+        compare_models_command_parser.add_argument(
+            'model_type',
+            metavar='model-type',
+            help=f'type of models being processed, choose from {", ".join(Shared.MODEL_TYPES)}.')
+
+        complete_execution_command_parser = subparsers.add_parser(
+            'complete-execution', help='completes the given data pipeline execution.')
+        complete_execution_command_parser.set_defaults(func=self.__process_complete_execution_command)
+        complete_execution_command_parser.add_argument(
             'execution_id',
             metavar='execution-id',
             help='data pipeline execution id as received using \'init\' command')
