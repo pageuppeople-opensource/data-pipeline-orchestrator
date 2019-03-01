@@ -1,0 +1,15 @@
+dist: xenial
+language: python
+python: 3.7
+env:
+  - PIPENV_VERBOSITY=-1
+
+services: docker
+before_install:
+  - docker pull postgres
+  - docker run -p 5432:5432 -e POSTGRES_PASSWORD=travisci -d postgres
+
+install: make install_deps
+script:
+  - make test_unit
+  - make test_integration
