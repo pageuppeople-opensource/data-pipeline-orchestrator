@@ -3,14 +3,13 @@ from pathlib import Path
 from modules.commands.BaseCommand import BaseCommand
 
 
-class CompareCommand(BaseCommand):
+class PersistModelsCommand(BaseCommand):
     def __init__(self, db_connection_string, execution_id, model_type, base_path, model_patterns, logger=None):
         super().__init__(db_connection_string, logger)
         self._execution_id = execution_id
         self._model_type = model_type
         self._base_path = base_path
         self._model_patterns = model_patterns
-        self._changed_models_separator = ','
 
     def execute(self):
         model_folder = Path(self._base_path)
@@ -23,24 +22,11 @@ class CompareCommand(BaseCommand):
                 if model_file.is_file():
                     current_model_checksums[model_file.stem] = self.__get_file_checksum(model_file)
 
-        data_pipeline_execution = self.repository.save_execution_progress(
+        data_pipeline_execution = self.repository.save_execution_models(
             self._execution_id, self._model_type, current_model_checksums)
-        self.logger.debug(f'Comparing data_pipeline_execution = ${str(data_pipeline_execution)}')
-
-        previous_model_checksums = self.repository.get_last_successful_models(self._model_type)
-
-        if len(previous_model_checksums) == 0:
-            print('*')
-            self.logger.debug(f'Changed models: ALL')
-            return
-
-        changed_models = []
-        for model, current_checksum in current_model_checksums.items():
-            if model not in previous_model_checksums or previous_model_checksums[model] != current_checksum:
-                changed_models.append(model)
-
-        print(self._changed_models_separator.join(changed_models))
-        self.logger.debug(f'Changed models: \'${str(changed_models)}\'')
+        self.logger.debug(
+            'Persisting {model_type} models of data_pipeline_execution = {execution_details}'
+            .format(model_type=self._model_type, execution_details=str(data_pipeline_execution)))
 
     def __get_file_checksum(self, file: Path):
         data = file.read_bytes()
