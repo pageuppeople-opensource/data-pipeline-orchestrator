@@ -110,3 +110,4 @@ venv.bak/
 .idea/
 
 test-models/
+tests/integration/models/
