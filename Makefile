@@ -10,3 +10,4 @@ test_unit:
 # Run integration tests
 test_integration:
 	./tests/integration/test_integration.sh
+	
