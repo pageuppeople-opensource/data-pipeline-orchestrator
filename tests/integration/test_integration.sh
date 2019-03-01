@@ -9,12 +9,14 @@ loadModelDirectory="./tests/integration/models/load"
 mcd="pipenv run python mcd.py postgresql+psycopg2://postgres:travisci@localhost:5432/postgres"
 
 InitExecution () {
-    executionId=$($mcd init)
+    executionId=$($mcd init-execution)
 }
 
 CompareAndAssert () {
     echo "Comparing load models"
-    changedModels=$($mcd compare $executionId load $loadModelDirectory *.json)
+    $($mcd persist-models $executionId load $loadModelDirectory "*.json")
+    lastSuccessfulExecutionId=$($mcd get-last-successful-execution)
+    changedModels=$($mcd compare-models $lastSuccessfulExecutionId $executionId load)
 
     echo "Assert changed load models"
     if [ "$changedModels" != "$1" ]
@@ -26,7 +28,7 @@ CompareAndAssert () {
 
 CompleteAndAssert () {
     echo "Completing execution"
-    $mcd complete $executionId
+    $mcd complete-execution $executionId
 
     echo "Asserting last successful execution"
     lastSuccessfulExecutionId=$($mcd get-last-successful-execution)
@@ -46,7 +48,7 @@ echo "load_model_2" > "$loadModelDirectory/load_model_2.json"
 # Execution 1
 echo "Beginning execution #1"
 InitExecution
-CompareAndAssert "*"
+CompareAndAssert "load_model_1 load_model_2"
 CompleteAndAssert
 
 # Modify load_model_1
