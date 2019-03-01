@@ -2,21 +2,12 @@
 
 [![Build Status](https://travis-ci.com/PageUpPeopleOrg/model-change-detector.svg?branch=master)](https://travis-ci.com/PageUpPeopleOrg/model-change-detector)
 
-## About
-
 A utility that persists state of a data pipeline execution and uses them to detect changes in models.
 
 ## Usage
 
-```commandline
-py mcd.py [options] <command> [command-parameters]
 ```
-
-To get help,use:
-
-```commandline
-py mcd.py -h
-py mcd.py <db-connection-string> <command> -h
+$ python mcd.py [options] <command> [command-parameters]
 ```
 
 - `options` include:
@@ -40,121 +31,113 @@ py mcd.py <db-connection-string> <command> -h
   - `complete-execution`: Marks the completion of an existing execution by updating a record for the same in the given database. Returns nothing unless there's an error.
     - `execution-id`: a GUID identifier of an existing data pipeline execution as returned by the `init` command.
 
-### As a script
+To get help, use:
 
-- Use a local isolated/virtual python environment for this project
-- Install project dependencies
-- `py mcd.py [options] <command> [command-parameters]`
-
-_Windows example:_
-
-```commandline
-py -m venv new-env --clear
-new-env\scripts\activate
-
-py -m pip install -r requirements.txt
-
-py mcd.py postgresql+psycopg2://user:password@host:port/dbname init-execution
-
-py mcd.py postgresql+psycopg2://user:password@host:port/dbname get-last-successful-execution
-py mcd.py postgresql+psycopg2://user:password@host:port/dbname get-execution-last-updated-timestamp id-as-returned-by-get-last-successful-execution-command
-
-py mcd.py postgresql+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command load ./relative/path/to/load/models **/*.json
-py mcd.py postgresql+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command load
-
-py mcd.py postgresql+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command transform C:/absolute/path/to/transform/models group1/*.csv ./group2/**/*.sql
-py mcd.py postgresql+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command transform
-
-py mcd.py postgresql+psycopg2://user:password@host:port/dbname complete-execution id-as-retured-by-init-command
+```
+$ python mcd.py --help
+$ python mcd.py <command> --help
 ```
 
-### As a package
+### Usage Example
 
-- Use/create an empty directory
-- Use a local isolated/virtual python environment for this project
-- [Install](https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs) this package
-  - `pip install -e path/to/ProjectX`
-  - `pip install -e git+git://github.com/ProjectX.git#egg=ProjectX`
-- `py -m mcd [options] <command> <command-options>`
+```
+$ pipenv install
+$ pipenv shell
 
-_Windows example:_
+$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname init-execution
 
-```commandline
-mkdir new-dir
-cd new-dir
+$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname get-last-successful-execution
+$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname get-execution-last-updated-timestamp id-as-returned-by-get-last-successful-execution-command
 
-py -m venv new-env --clear
-new-env\scripts\activate
+$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command load ./relative/path/to/load/models **/*.json
+$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command load
 
-pip install -e git+git://github.com/PageUpPeopleOrg/model-change-detector.git#egg=mcd
+$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command transform C:/absolute/path/to/transform/models group1/*.csv ./group2/**/*.sql
+$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command transform
 
-py -m mcd postgresql+psycopg2://user:password@host:port/dbname init-execution
+$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname complete-execution id-as-retured-by-init-command
 ```
 
-## Setup
+## Prerequisites
 
-1. Install pre-requisites
-2. Use a local isolated/virtual python environment for this project
-3. Install project dependencies
-4. Develop and test code changes
-5. Once done, deactivate the virtual environment
+- [Python 3](https://www.python.org/downloads/)
+- [Pipenv](https://pipenv.readthedocs.io/en/latest/install/#installing-pipenv)
 
-### Install pre-requisites
+### Verify Installation
 
-#### Python 3
+Verify dependencies are installed by running the following commands:
 
-Install from [here](https://www.python.org/) _(or your choice of safe software provider)_. During installation, choose the option to _Add to PATH_ and _Custom Installation_ so you can provide the install path to not be the default `C:\Program Files\Python37\` and be outside the `Program Files` directory to say, `C:\Python37\`. This is just a suggestion since there have been issues with updating key python packages once Python is installed within `Program Files` on Windows.
-
-Verify your installation by running the below commands.
-
-```powershell
-py --version
-python --version
-pip --version
+```
+$ python --version
+$ pipenv --version
 ```
 
-If you end up with multiple accidental/purposeful python installations, use the below in Windows Commandline to figure out where the executables are located.
+## Getting Started
 
-```cmd
-where py
-where python
-where pip
+### Install dependencies
+
+To install project dependencies, run the following command:
+
+```
+$ pipenv install
 ```
 
-### Use a local isolated/virtual python environment for this project
+### Activate Virtual Environment
 
-`py -m venv /path/to/new/virtual/environment` _e.g._ `py -m venv new-env`
+To activate a virtual environment, run the following command:
 
-If you build with `--system-site-packages` directory, your virtual environment will be allowed access to packages from your global site-packages directory. Although, if you want isolation from the global system, do not use this flag. Once you've created a new environment, you need to activate the same.
-
-On Windows:
-
-`path\to\environment\scripts\activate` _e.g._ `new-env\scripts\activate`
-
-On Linux / Mac OS
-
-`source path/to/environment/bin/activate` _e.g._ `source new-env/bin/activate`
-
-You should see the name of your virtual environment in brackets on your terminal line, e.g.:
-
-```commandline
-C:\path\to\working\dir: new-env\scripts\activate
-(new-env) C:\path\to\working\dir: _
+```
+$ pipenv shell
 ```
 
-Any python commands you use will now, work within your virtual environment only.
+### Using MCD
 
-### Install project dependencies
+Once the virtual environment has been activated, please refer to [usage](#Usage) for how to use MCD.
 
-```powershell
-pip install -r requirements.txt
+## Testing
+
+To run integration tests locally, it is highly recommended that [Docker](https://www.docker.com/) is installed.
+
+### Unit Tests
+
+To run unit tests, run the following command:
+
+```
+$ python pytest
 ```
 
-### Deactivate the virtual environment
+### Integration Tests
 
-Once done, deactivate the virtual environment with a simple `decativate` command, e.g.:
+To run integration tests, please ensure the following information is configured correctly:
 
-```commandline
-(new-env) C:\path\to\working\dir: deactivate
-C:\path\to\working\dir: _
+- `tests/integration/test_integration.sh:9`
+
+Please ensure that the database connection string points to a valid PostgreSQL instance.
+
+#### Docker
+
+If Docker is installed, running tests is as simple as running the following commands:
+
+```
+$ docker pull postgres
+$ docker run --name stubdatabase -p 5432:5432 -e POSTGRES_PASSWORD=travisci -d postgres
+$ make test_integration
+$ docker stop stubdatabase
+$ docker remove stubdatabase
+```
+
+#### Local PostgreSQL
+
+If a local instance of PostgreSQL is installed, run integration tests with the following command:
+
+```
+$ make test_integration
+```
+
+#### Notes
+
+If you do not have `make` installed, you can substitute `make` with:
+
+```
+$ ./tests/integration/test_integration.sh
 ```
