@@ -3,17 +3,17 @@ from modules.Shared import Constants
 
 
 class CompareModelsCommand(BaseCommand):
-    def __init__(self, db_connection_string, old_execution_id, new_execution_id, model_type, logger=None):
+    def __init__(self, db_connection_string, previous_execution_id, current_execution_id, model_type, logger=None):
         super().__init__(db_connection_string, logger)
-        self._old_execution_id = old_execution_id
-        self._new_execution_id = new_execution_id
+        self._previous_execution_id = previous_execution_id
+        self._current_execution_id = current_execution_id
         self._model_type = model_type
         self._changed_models_separator = ' '
 
     def execute(self):
-        old_models = [] if self._old_execution_id == Constants.NO_LAST_SUCCESSFUL_EXECUTION \
-            else self.repository.get_execution_models(self._old_execution_id, self._model_type)
-        new_models = self.repository.get_execution_models(self._new_execution_id, self._model_type)
+        old_models = [] if self._previous_execution_id == Constants.NO_LAST_SUCCESSFUL_EXECUTION \
+            else self.repository.get_execution_models(self._previous_execution_id, self._model_type)
+        new_models = self.repository.get_execution_models(self._current_execution_id, self._model_type)
 
         # kept for later validation
         # if len(old_models) == 0:

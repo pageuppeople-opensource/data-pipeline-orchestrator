@@ -41,7 +41,7 @@ class ModelChangeDetector(BaseObject):
 
     def __process_compare_models_command(self):
         CompareModelsCommand(
-            self.args.db_connection_string, self.args.old_execution_id, self.args.new_execution_id,
+            self.args.db_connection_string, self.args.previous_execution_id, self.args.current_execution_id,
             self.args.model_type.upper()
         ).execute()
 
@@ -118,13 +118,13 @@ class ModelChangeDetector(BaseObject):
                  'Returns comma-separated string of changed model names.')
         compare_models_command_parser.set_defaults(func=self.__process_compare_models_command)
         compare_models_command_parser.add_argument(
-            'old_execution_id',
-            metavar='old-execution-id',
+            'previous_execution_id',
+            metavar='previous-execution-id',
             help='identifier of an existing data pipeline execution, '
                  'ideally as returned by the \'get-last-successful-execution\' command.')
         compare_models_command_parser.add_argument(
-            'new_execution_id',
-            metavar='new-execution-id',
+            'current_execution_id',
+            metavar='current-execution-id',
             help='identifier of an existing data pipeline execution, ideally as returned by the \'init\' command.')
         compare_models_command_parser.add_argument(
             'model_type',

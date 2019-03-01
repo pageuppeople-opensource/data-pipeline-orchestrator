@@ -12,7 +12,7 @@ class Constants:
 
     class DataPipelineExecutionStatus:
         INITIALISED = 'INITIALISED'
-        MODEL_TYPE_IN_PROCESS = '{model_type}_IN_PROCESS'
+        IN_PROGRESS = 'IN_PROGRESS'
         COMPLETED = 'COMPLETED'
 
     class ModelType:

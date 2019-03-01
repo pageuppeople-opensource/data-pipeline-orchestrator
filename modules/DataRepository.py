@@ -63,7 +63,7 @@ class DataRepository(BaseObject):
             .one()
 
         data_pipeline_execution.status = \
-            Constants.DataPipelineExecutionStatus.MODEL_TYPE_IN_PROCESS.format(model_type=model_type)
+            Constants.DataPipelineExecutionStatus.IN_PROGRESS
         for model, checksum in sorted(model_checksums.items()):
             model_checksum_entity = ModelChecksumEntity(execution_id=data_pipeline_execution.id,
                                                         type=model_type,

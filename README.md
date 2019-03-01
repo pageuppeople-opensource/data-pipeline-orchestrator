@@ -32,8 +32,8 @@ py mcd.py <db-connection-string> <command> -h
     - `base-path`: absolute or relative path to the models e.g.: `./load`, `/home/local/transform`, `C:/path/to/models`
     - `model-patterns`: one or more unix-style search patterns _(relative to `base-path`)_ for model files. models within a model-type must be named uniquely regardless of their file extension. e.g.: `*.txt`, `**/*.txt`, `./relative/path/to/some_models/**/*.csv`, `relative/path/to/some/more/related/models/**/*.sql`
   - `compare-models`: Compares the hashed checksums of models between two executions. Returns comma-separated string of changed model names.
-    - `old-execution-id`: identifier of an existing data pipeline execution, ideally as returned by the `get-last-successful-execution` command.
-    - `new-execution-id`: identifier of an existing data pipeline execution, ideally as returned by the `init` command.
+    - `previous-execution-id`: identifier of an existing data pipeline execution, ideally as returned by the `get-last-successful-execution` command.
+    - `current-execution-id`: identifier of an existing data pipeline execution, ideally as returned by the `init` command.
     - `model-type`: type of models being processed, choose from `LOAD`, `TRANSFORM`.
   - `complete-execution`: Marks the completion of an existing execution by updating a record for the same in the given database. Returns nothing unless there's an error.
     - `execution-id`: a GUID identifier of an existing data pipeline execution as returned by the `init` command.
