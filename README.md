@@ -61,7 +61,7 @@ $ python mcd.py postgresql+psycopg2://user:password@host:port/dbname complete-ex
 ## Prerequisites
 
 - [Python 3](https://www.python.org/downloads/)
-- [Pipenv](https://pipenv.readthedocs.io/en/latest/install/#installing-pipenv) (recommended but not required)
+- [Pipenv](https://pipenv.readthedocs.io/en/latest/install/#installing-pipenv)
 
 ### Verify Installation
 
@@ -74,16 +74,7 @@ $ pipenv --version
 
 ## Getting Started
 
-There are two approaches to getting started with using MCD:
-
-- Pipenv
-- Pip
-
-Pipenv is the recommended approach, however, you can still use `pip` to install dependencies.
-
-### Pipenv (recommended)
-
-#### Install dependencies
+### Install dependencies
 
 To install project dependencies, run the following command:
 
@@ -91,26 +82,12 @@ To install project dependencies, run the following command:
 $ pipenv install
 ```
 
-#### Activate Virtual Environment
+### Activate Virtual Environment
 
 To activate a virtual environment, run the following command:
 
 ```
 $ pipenv shell
-```
-
-### Pip (traditional)
-
-#### Activate Virtual Environment
-
-To create and activate a virtual environment, please refer to the following [guide](https://docs.python.org/3/library/venv.html#creating-virtual-environments).
-
-#### Install dependencies
-
-To install project dependencies, run the following command:
-
-```
-$ pip install -r requirements.txt
 ```
 
 ### Using MCD
