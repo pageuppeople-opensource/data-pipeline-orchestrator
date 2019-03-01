@@ -7,7 +7,7 @@ A utility that persists state of a data pipeline execution and uses them to dete
 ## Usage
 
 ```
-$ python mcd.py [options] <command> [command-parameters]
+$ python mcd.py [options] {db-connection-string} <command> [command-parameters]
 ```
 
 - `options` include:
