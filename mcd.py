@@ -1,4 +1,4 @@
-from modules.ModelChangeDetector import ModelChangeDetector
+from mcd.ModelChangeDetector import ModelChangeDetector
 
 if __name__ == "__main__":
     ModelChangeDetector()
