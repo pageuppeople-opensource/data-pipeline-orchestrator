@@ -1,15 +1,15 @@
 import argparse
 import logging
 
-from modules import Shared
-from modules.BaseObject import BaseObject
-from modules.Shared import Constants
-from modules.commands.InitialiseExecutionCommand import InitialiseExecutionCommand
-from modules.commands.GetLastSuccessfulExecutionCommand import GetLastSuccessfulExecutionCommand
-from modules.commands.GetExecutionLastUpdateTimestampCommand import GetExecutionLastUpdateTimestampCommand
-from modules.commands.PersistModelsCommand import PersistModelsCommand
-from modules.commands.CompareModelsCommand import CompareModelsCommand
-from modules.commands.CompleteExecutionCommand import CompleteExecutionCommand
+from mcd import Shared
+from mcd.BaseObject import BaseObject
+from mcd.Shared import Constants
+from mcd.commands.InitialiseExecutionCommand import InitialiseExecutionCommand
+from mcd.commands.GetLastSuccessfulExecutionCommand import GetLastSuccessfulExecutionCommand
+from mcd.commands.GetExecutionLastUpdateTimestampCommand import GetExecutionLastUpdateTimestampCommand
+from mcd.commands.PersistModelsCommand import PersistModelsCommand
+from mcd.commands.CompareModelsCommand import CompareModelsCommand
+from mcd.commands.CompleteExecutionCommand import CompleteExecutionCommand
 
 
 class ModelChangeDetector(BaseObject):
