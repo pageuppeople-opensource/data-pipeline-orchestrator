@@ -7,7 +7,7 @@ A utility that persists state of a data pipeline execution and uses them to dete
 ## Usage
 
 ```
-$ python mcd.py [options] {db-connection-string} <command> [command-parameters]
+$ python -m mcd [options] {db-connection-string} <command> [command-parameters]
 ```
 
 - `options` include:
@@ -34,8 +34,8 @@ $ python mcd.py [options] {db-connection-string} <command> [command-parameters]
 To get help, use:
 
 ```
-$ python mcd.py --help
-$ python mcd.py <command> --help
+$ python -m mcd --help
+$ python -m mcd <command> --help
 ```
 
 ### Usage Example
@@ -44,18 +44,18 @@ $ python mcd.py <command> --help
 $ pipenv install
 $ pipenv shell
 
-$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname init-execution
+$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname init-execution
 
-$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname get-last-successful-execution
-$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname get-execution-last-updated-timestamp id-as-returned-by-get-last-successful-execution-command
+$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname get-last-successful-execution
+$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname get-execution-last-updated-timestamp id-as-returned-by-get-last-successful-execution-command
 
-$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command load ./relative/path/to/load/models **/*.json
-$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command load
+$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command load ./relative/path/to/load/models **/*.json
+$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command load
 
-$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command transform C:/absolute/path/to/transform/models group1/*.csv ./group2/**/*.sql
-$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command transform
+$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command transform C:/absolute/path/to/transform/models group1/*.csv ./group2/**/*.sql
+$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command transform
 
-$ python mcd.py postgresql+psycopg2://user:password@host:port/dbname complete-execution id-as-retured-by-init-command
+$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname complete-execution id-as-retured-by-init-command
 ```
 
 ## Prerequisites

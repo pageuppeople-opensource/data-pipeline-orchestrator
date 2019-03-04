@@ -6,7 +6,7 @@ set -e
 # Bootstrap
 ## Aliases
 loadModelDirectory="./tests/integration/models/load"
-mcd="pipenv run python mcd.py postgresql+psycopg2://postgres:travisci@localhost:5432/postgres"
+mcd="pipenv run python -m mcd postgresql+psycopg2://postgres:travisci@localhost:5432/postgres"
 
 InitExecution () {
     executionId=$($mcd init-execution)
