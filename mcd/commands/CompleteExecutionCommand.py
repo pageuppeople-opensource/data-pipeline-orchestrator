@@ -1,6 +1,6 @@
 import hashlib
 from pathlib import Path
-from modules.commands.BaseCommand import BaseCommand
+from mcd.commands.BaseCommand import BaseCommand
 
 
 class CompleteExecutionCommand(BaseCommand):

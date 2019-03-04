@@ -1,11 +1,11 @@
 from sqlalchemy import desc, select
 from sqlalchemy.sql import func
 from sqlalchemy.orm import sessionmaker
-from modules import Shared
-from modules.BaseObject import BaseObject
-from modules.Shared import Constants
-from modules.entities.DataPipelineExecutionEntity import DataPipelineExecutionEntity
-from modules.entities.ModelChecksumEntity import ModelChecksumEntity
+from mcd import Shared
+from mcd.BaseObject import BaseObject
+from mcd.Shared import Constants
+from mcd.entities.DataPipelineExecutionEntity import DataPipelineExecutionEntity
+from mcd.entities.ModelChecksumEntity import ModelChecksumEntity
 
 
 class DataRepository(BaseObject):

@@ -1,4 +1,4 @@
-from modules.commands.BaseCommand import BaseCommand
+from mcd.commands.BaseCommand import BaseCommand
 
 
 class InitialiseExecutionCommand(BaseCommand):

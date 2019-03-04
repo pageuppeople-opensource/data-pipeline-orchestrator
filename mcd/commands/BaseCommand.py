@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
-from modules.DataRepository import DataRepository
-from modules.BaseObject import BaseObject
+from mcd.DataRepository import DataRepository
+from mcd.BaseObject import BaseObject
 
 
 class BaseCommand(BaseObject):

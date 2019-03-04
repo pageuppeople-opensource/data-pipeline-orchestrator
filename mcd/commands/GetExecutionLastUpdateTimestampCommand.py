@@ -1,5 +1,5 @@
-from modules.commands.BaseCommand import BaseCommand
-from modules.Shared import Constants
+from mcd.commands.BaseCommand import BaseCommand
+from mcd.Shared import Constants
 
 
 class GetExecutionLastUpdateTimestampCommand(BaseCommand):
