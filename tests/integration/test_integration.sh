@@ -10,6 +10,7 @@ loadModelDirectory="$modelDirectory/load"
 transformModelDirectory="$modelDirectory/transform"
 
 # Generate a pseudo UUID
+# https://gist.github.com/markusfisch/6110640
 NewUUID () {
     local N B C='89ab'
 
@@ -45,11 +46,14 @@ LogErrorAndExit () {
 }
 
 AssertAreEqual () {
-    local actual=$1
-    local expected=$2
-    if [ "$actual" != "$expected" ]
+    local subject=$1
+    local actual=$2
+    local expected=$3
+    if [ "$actual" == "$expected" ]
     then
-        LogErrorAndExit "ERROR: expected "$expected", actual "$actual""
+        echo "PASS: "$subject" as expected"
+    else
+        LogErrorAndExit "ERROR: "$subject" was expected to be "$expected", actual was "$actual""
     fi
 }
 
@@ -111,7 +115,7 @@ CompleteExecution () {
     $mcd complete-execution $executionId
 
     local lastSuccessfulExecId=$(GetLastSuccessfulExecution)
-    AssertAreEqual "$lastSuccessfulExecId" "$executionId"
+    AssertAreEqual "ExecutionID $executionId completed successfully; next LastSuccessfulExecutionID" "$lastSuccessfulExecId" "$executionId"
 }
 
 ExecuteAndAssert () {
@@ -124,31 +128,31 @@ ExecuteAndAssert () {
 
     # Act
     local execId=$(InitExecution)
-    echo " iter$iter_no execId                                = $execId"
+    echo "  iter$iter_no execId                                = $execId"
 
     local lastSuccessfulExecId=$(GetLastSuccessfulExecution)
-    echo " iter$iter_no lastSuccessfulExecId                  = $lastSuccessfulExecId"
+    echo "  iter$iter_no lastSuccessfulExecId                  = $lastSuccessfulExecId"
 
     local lastSuccessfulExecCompletionTimestamp=$(GetExecutionLastUpdatedTimestamp $lastSuccessfulExecId)
-    echo " iter$iter_no lastSuccessfulExecCompletionTimestamp = $lastSuccessfulExecCompletionTimestamp"
+    echo "  iter$iter_no lastSuccessfulExecCompletionTimestamp = $lastSuccessfulExecCompletionTimestamp"
 
     PersistModels $execId LOAD $loadModelDirectory
     local changedLoadModels=$(CompareModels $lastSuccessfulExecId $execId LOAD)
-    echo " iter$iter_no changedLoadModels                     = '$changedLoadModels'"
+    echo "  iter$iter_no changedLoadModels                     = '$changedLoadModels'"
 
     PersistModels $execId TRANSFORM $transformModelDirectory
     local changedTransformModels=$(CompareModels $lastSuccessfulExecId $execId TRANSFORM)
-    echo " iter$iter_no changedTransformModels                = '$changedTransformModels'"
+    echo "  iter$iter_no changedTransformModels                = '$changedTransformModels'"
 
     CompleteExecution $execId
 
     # Assert
     if [ ! -z "$expected_lastSuccessfulExecId" ]
     then
-        AssertAreEqual "$lastSuccessfulExecId" "$expected_lastSuccessfulExecId"
+        AssertAreEqual "Iteration $iter_no's LastSuccessfulExecutionID" "$lastSuccessfulExecId" "$expected_lastSuccessfulExecId"
     fi
-    AssertAreEqual "$changedLoadModels" "$expected_changedLoadModels"
-    AssertAreEqual "$changedTransformModels" "$expected_changedTransformModels"
+    AssertAreEqual "Iteration $iter_no's ChangedLoadModels" "$changedLoadModels" "$expected_changedLoadModels"
+    AssertAreEqual "Iteration $iter_no's ChangedTransformModels" "$changedTransformModels" "$expected_changedTransformModels"
 
     if [[ "$__resultvar" ]]; then
         eval $__resultvar="'$execId'"
@@ -172,13 +176,13 @@ echo -e "\nBeginning execution #1"
 rm -rf $modelDirectory
 
 ## Create stub load models
-echo "Creating stub LOAD models: load_model_1, load_model_2"
+echo " Creating stub LOAD models: load_model_1, load_model_2"
 mkdir -p $loadModelDirectory
 echo "load_model_1" > "$loadModelDirectory/$load_model_1.json"
 echo "load_model_2" > "$loadModelDirectory/$load_model_2.json"
 
 ## Create stub transform models
-echo "Creating stub TRANSFORM models: transform_model_1, transform_model_2, transform_model_3"
+echo " Creating stub TRANSFORM models: transform_model_1, transform_model_2, transform_model_3"
 mkdir -p $transformModelDirectory
 echo "transform_model_1" > "$transformModelDirectory/$transform_model_1.csv"
 echo "transform_model_2" > "$transformModelDirectory/$transform_model_2.sql"
@@ -196,15 +200,15 @@ ExecuteAndAssert "1" "$iter1_expected_lastSuccessfulExecId" "$iter1_expected_cha
 echo -e "\nBeginning execution #2"
 
 # ARRANGE
-echo "Making no changes to any LOAD models"
+echo " Making no changes to any LOAD models"
 
-echo "Modifying transform_model_2"
+echo " Modifying transform_model_2"
 echo "Modified transform_model_2" > "$transformModelDirectory/$transform_model_2.sql"
 
-echo "Deleting transform_model_3"
+echo " Deleting transform_model_3"
 rm -f "$transformModelDirectory/$transform_model_3.sql"
 
-echo "Adding transform_model_4"
+echo " Adding transform_model_4"
 echo "transform_model_4" > "$transformModelDirectory/$transform_model_4.sql"
 
 # ACT & ASSERT
