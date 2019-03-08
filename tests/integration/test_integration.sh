@@ -189,7 +189,7 @@ echo "transform_model_2" > "$transformModelDirectory/$transform_model_2.sql"
 echo "transform_model_3" > "$transformModelDirectory/$transform_model_3.sql"
 
 # ACT & ASSERT
-iter1_expected_lastSuccessfulExecId=""
+iter1_expected_lastSuccessfulExecId="" # pass in empty string to skip test since we don't know the past state of the pipeline
 iter1_expected_changedLoadModels="$load_model_1 $load_model_2"
 iter1_expected_changedTransformModels="$transform_model_1 $transform_model_2 $transform_model_3"
 ExecuteAndAssert "1" "$iter1_expected_lastSuccessfulExecId" "$iter1_expected_changedLoadModels" "$iter1_expected_changedTransformModels" iter1_execId

@@ -112,7 +112,7 @@ To run integration tests, please ensure the following information is configured 
 
 - `tests/integration/test_integration.sh:9`
 
-Please ensure that the database connection string points to a valid PostgreSQL instance.
+Please ensure that the database connection string points to a valid PostgreSQL instance with valid parameters.
 
 #### Docker
 
