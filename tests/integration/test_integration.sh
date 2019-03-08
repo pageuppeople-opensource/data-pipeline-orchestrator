@@ -5,6 +5,9 @@ set -e
 
 # Bootstrap
 mcd="pipenv run python -m mcd postgresql+psycopg2://postgres:password@localhost:5432/postgres"
+modelDirectory="./tests/integration/models"
+loadModelDirectory="$modelDirectory/load"
+transformModelDirectory="$modelDirectory/transform"
 
 # Generate a pseudo UUID
 NewUUID () {
@@ -107,13 +110,51 @@ CompleteExecution () {
 
     $mcd complete-execution $executionId
 
-    lastSuccessfulExecId=$(GetLastSuccessfulExecution)
+    local lastSuccessfulExecId=$(GetLastSuccessfulExecution)
     AssertAreEqual "$lastSuccessfulExecId" "$executionId"
 }
 
-modelDirectory="./tests/integration/models"
-loadModelDirectory="$modelDirectory/load"
-transformModelDirectory="$modelDirectory/transform"
+ExecuteAndAssert () {
+    # Arrange
+    local iter_no=$1
+    local expected_lastSuccessfulExecId=$2
+    local expected_changedLoadModels=$3
+    local expected_changedTransformModels=$4
+    local __resultvar=$5
+
+    # Act
+    local execId=$(InitExecution)
+    echo " iter$iter_no execId                                = $execId"
+
+    local lastSuccessfulExecId=$(GetLastSuccessfulExecution)
+    echo " iter$iter_no lastSuccessfulExecId                  = $lastSuccessfulExecId"
+
+    local lastSuccessfulExecCompletionTimestamp=$(GetExecutionLastUpdatedTimestamp $lastSuccessfulExecId)
+    echo " iter$iter_no lastSuccessfulExecCompletionTimestamp = $lastSuccessfulExecCompletionTimestamp"
+
+    PersistModels $execId LOAD $loadModelDirectory
+    local changedLoadModels=$(CompareModels $lastSuccessfulExecId $execId LOAD)
+    echo " iter$iter_no changedLoadModels                     = '$changedLoadModels'"
+
+    PersistModels $execId TRANSFORM $transformModelDirectory
+    local changedTransformModels=$(CompareModels $lastSuccessfulExecId $execId TRANSFORM)
+    echo " iter$iter_no changedTransformModels                = '$changedTransformModels'"
+
+    CompleteExecution $execId
+
+    # Assert
+    if [ ! -z "$expected_lastSuccessfulExecId" ]
+    then
+        AssertAreEqual "$lastSuccessfulExecId" "$expected_lastSuccessfulExecId"
+    fi
+    AssertAreEqual "$changedLoadModels" "$expected_changedLoadModels"
+    AssertAreEqual "$changedTransformModels" "$expected_changedTransformModels"
+
+    if [[ "$__resultvar" ]]; then
+        eval $__resultvar="'$execId'"
+    fi
+}
+
 load_model_1="load_model_1_$(NewUUID)"
 load_model_2="load_model_2_$(NewUUID)"
 transform_model_1="transform_model_1_$(NewUUID)"
@@ -144,30 +185,10 @@ echo "transform_model_2" > "$transformModelDirectory/$transform_model_2.sql"
 echo "transform_model_3" > "$transformModelDirectory/$transform_model_3.sql"
 
 # ACT & ASSERT
-iter1_execId=$(InitExecution)
-echo " iter1_execId                                = $iter1_execId"
-
-iter1_lastSuccessfulExecId=$(GetLastSuccessfulExecution)
-echo " iter1_lastSuccessfulExecId                  = $iter1_lastSuccessfulExecId"
-
-iter1_lastSuccessfulExecCompletionTimestamp=$(GetExecutionLastUpdatedTimestamp $iter1_lastSuccessfulExecId)
-echo " iter1_lastSuccessfulExecCompletionTimestamp = $iter1_lastSuccessfulExecCompletionTimestamp"
-
-PersistModels $iter1_execId LOAD $loadModelDirectory
-iter1_changedLoadModels=$(CompareModels $iter1_lastSuccessfulExecId $iter1_execId LOAD)
-echo " iter1_changedLoadModels                     = '$iter1_changedLoadModels'"
-
-iter1_changedLoadModels_expected="$load_model_1 $load_model_2"
-AssertAreEqual "$iter1_changedLoadModels" "$iter1_changedLoadModels_expected"
-
-PersistModels $iter1_execId TRANSFORM $transformModelDirectory
-iter1_changedTransformModels=$(CompareModels $iter1_lastSuccessfulExecId $iter1_execId TRANSFORM)
-echo " iter1_changedTransformModels                = '$iter1_changedTransformModels'"
-
-iter1_changedTransformModels_expected="$transform_model_1 $transform_model_2 $transform_model_3"
-AssertAreEqual "$iter1_changedTransformModels" "$iter1_changedTransformModels_expected"
-
-CompleteExecution $iter1_execId
+iter1_expected_lastSuccessfulExecId=""
+iter1_expected_changedLoadModels="$load_model_1 $load_model_2"
+iter1_expected_changedTransformModels="$transform_model_1 $transform_model_2 $transform_model_3"
+ExecuteAndAssert "1" "$iter1_expected_lastSuccessfulExecId" "$iter1_expected_changedLoadModels" "$iter1_expected_changedTransformModels" iter1_execId
 
 ###############
 # Execution 2 #
@@ -187,28 +208,7 @@ echo "Adding transform_model_4"
 echo "transform_model_4" > "$transformModelDirectory/$transform_model_4.sql"
 
 # ACT & ASSERT
-iter2_execId=$(InitExecution)
-echo " iter2_execId                                = $iter2_execId"
-
-iter2_lastSuccessfulExecId=$(GetLastSuccessfulExecution)
-echo " iter2_lastSuccessfulExecId                  = $iter2_lastSuccessfulExecId"
-AssertAreEqual "$iter2_lastSuccessfulExecId" "$iter1_execId"
-
-iter2_lastSuccessfulExecCompletionTimestamp=$(GetExecutionLastUpdatedTimestamp $iter2_lastSuccessfulExecId)
-echo " iter2_lastSuccessfulExecCompletionTimestamp = $iter2_lastSuccessfulExecCompletionTimestamp"
-
-PersistModels $iter2_execId LOAD $loadModelDirectory
-iter2_changedLoadModels=$(CompareModels $iter2_lastSuccessfulExecId $iter2_execId LOAD)
-echo " iter2_changedLoadModels                     = '$iter2_changedLoadModels'"
-
-iter2_compareLoadModels_expected=""
-AssertAreEqual "$iter2_changedLoadModels" "$iter2_compareLoadModels_expected"
-
-PersistModels $iter2_execId TRANSFORM $transformModelDirectory
-iter2_changedTransformModels=$(CompareModels $iter2_lastSuccessfulExecId $iter2_execId TRANSFORM)
-echo " iter2_changedTransformModels                = '$iter2_changedTransformModels'"
-
-iter2_compareTransformModels_expected="$transform_model_2 $transform_model_4"
-AssertAreEqual "$iter2_changedTransformModels" "$iter2_compareTransformModels_expected"
-
-CompleteExecution $iter2_execId
+iter2_expected_lastSuccessfulExecId="$iter1_execId"
+iter2_expected_changedLoadModels=""
+iter2_expected_changedTransformModels="$transform_model_2 $transform_model_4"
+ExecuteAndAssert "2" "$iter2_expected_lastSuccessfulExecId" "$iter2_expected_changedLoadModels" "$iter2_expected_changedTransformModels" iter2_execId
