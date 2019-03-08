@@ -109,5 +109,4 @@ venv.bak/
 # JetBrains
 .idea/
 
-test-models/
 tests/integration/models/

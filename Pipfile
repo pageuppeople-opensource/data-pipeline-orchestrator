@@ -5,6 +5,9 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
+pep8 = "*"
+pylint = "*"
+autopep8 = "*"
 
 [packages]
 psycopg2-binary = "==2.7.7"
