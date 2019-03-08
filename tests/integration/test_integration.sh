@@ -4,7 +4,7 @@
 set -e
 
 # Bootstrap
-mcd="pipenv run python -m mcd postgresql+psycopg2://postgres:password@localhost:5432/postgres"
+mcd="pipenv run python -m mcd postgresql+psycopg2://postgres:travisci@localhost:5432/postgres"
 modelDirectory="./tests/integration/models"
 loadModelDirectory="$modelDirectory/load"
 transformModelDirectory="$modelDirectory/transform"
