@@ -60,7 +60,7 @@ AssertAreEqual () {
 InitExecution () {
     local executionId=$($mcd init-execution)
 
-    if [ ${#executionId} -ne 36 ]
+    if [ ${#executionId} != 36 ]
     then
         LogErrorAndExit "ERROR: expected a non-empty guid-length execution identifier, actual "$executionId""
     fi
