@@ -4,7 +4,7 @@
 set -e
 
 # Bootstrap
-dpo="pipenv run python -m dpo postgresql+psycopg2://postgres:postgres@localhost:5432/postgres"
+dpo="pipenv run python -m dpo postgresql+psycopg2://postgres:travisci@localhost:5432/postgres"
 modelDirectory="./tests/integration/models"
 loadModelDirectory="$modelDirectory/load"
 transformModelDirectory="$modelDirectory/transform"
