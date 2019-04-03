@@ -1,13 +1,13 @@
-# Model Change Detector
+# Data Pipeline Orchestrator
 
-[![Build Status](https://travis-ci.com/PageUpPeopleOrg/model-change-detector.svg?branch=master)](https://travis-ci.com/PageUpPeopleOrg/model-change-detector)
+[![Build Status](https://travis-ci.com/PageUpPeopleOrg/data-pipeline-orchestrator.svg?branch=master)](https://travis-ci.com/PageUpPeopleOrg/data-pipeline-orchestrator)
 
 A utility that persists state of a data pipeline execution and uses them to detect changes in models.
 
 ## Usage
 
 ```
-$ python -m mcd [options] {db-connection-string} <command> [command-parameters]
+$ python -m dpo [options] {db-connection-string} <command> [command-parameters]
 ```
 
 - `options` include:
@@ -34,8 +34,8 @@ $ python -m mcd [options] {db-connection-string} <command> [command-parameters]
 To get help, use:
 
 ```
-$ python -m mcd --help
-$ python -m mcd <command> --help
+$ python -m dpo --help
+$ python -m dpo <command> --help
 ```
 
 ### Usage Example
@@ -44,18 +44,18 @@ $ python -m mcd <command> --help
 $ pipenv install
 $ pipenv shell
 
-$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname init-execution
+$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname init-execution
 
-$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname get-last-successful-execution
-$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname get-execution-last-updated-timestamp id-as-returned-by-get-last-successful-execution-command
+$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname get-last-successful-execution
+$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname get-execution-last-updated-timestamp id-as-returned-by-get-last-successful-execution-command
 
-$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command load ./relative/path/to/load/models **/*.json
-$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command load
+$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command load ./relative/path/to/load/models **/*.json
+$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command load
 
-$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command transform C:/absolute/path/to/transform/models group1/*.csv ./group2/**/*.sql
-$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command transform
+$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command transform C:/absolute/path/to/transform/models group1/*.csv ./group2/**/*.sql
+$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command transform
 
-$ python -m mcd postgresql+psycopg2://user:password@host:port/dbname complete-execution id-as-retured-by-init-command
+$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname complete-execution id-as-retured-by-init-command
 ```
 
 ## Prerequisites
@@ -90,9 +90,9 @@ To activate a virtual environment, run the following command:
 $ pipenv shell
 ```
 
-### Using MCD
+### Using DPO
 
-Once the virtual environment has been activated, please refer to [usage](#Usage) for how to use MCD.
+Once the virtual environment has been activated, please refer to [usage](#Usage) for how to use DPO.
 
 ## Testing
 
@@ -103,16 +103,22 @@ To run integration tests locally, it is highly recommended that [Docker](https:/
 To run unit tests, run the following command:
 
 ```
-$ python pytest
+$ pytest
 ```
 
 ### Integration Tests
 
-To run integration tests, please ensure the following information is configured correctly:
+Before running integration tests, please ensure the following information is configured correctly:
 
-- `tests/integration/test_integration.sh:9`
+- `tests/integration/test_integration.sh:7`
 
 Please ensure that the database connection string points to a valid PostgreSQL instance with valid parameters.
+
+To run integration tests, run the following command:
+
+```
+$ ./tests/integration/test_integration.sh
+```
 
 #### Docker
 

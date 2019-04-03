@@ -2,8 +2,8 @@ from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
-from mcd.Shared import Constants
-from mcd import Shared
+from dpo.Shared import Constants
+from dpo import Shared
 
 TABLE_NAME = 'data_pipeline_execution'
 PRIMARY_KEY_COL_NAME = 'id'

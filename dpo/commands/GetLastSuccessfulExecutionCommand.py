@@ -1,5 +1,5 @@
-from mcd.commands.BaseCommand import BaseCommand
-from mcd.Shared import Constants
+from dpo.commands.BaseCommand import BaseCommand
+from dpo.Shared import Constants
 
 
 class GetLastSuccessfulExecutionCommand(BaseCommand):

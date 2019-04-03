@@ -1,18 +1,18 @@
 import argparse
 import logging
 
-from mcd import Shared
-from mcd.BaseObject import BaseObject
-from mcd.Shared import Constants
-from mcd.commands.InitialiseExecutionCommand import InitialiseExecutionCommand
-from mcd.commands.GetLastSuccessfulExecutionCommand import GetLastSuccessfulExecutionCommand
-from mcd.commands.GetExecutionLastUpdateTimestampCommand import GetExecutionLastUpdateTimestampCommand
-from mcd.commands.PersistModelsCommand import PersistModelsCommand
-from mcd.commands.CompareModelsCommand import CompareModelsCommand
-from mcd.commands.CompleteExecutionCommand import CompleteExecutionCommand
+from dpo import Shared
+from dpo.BaseObject import BaseObject
+from dpo.Shared import Constants
+from dpo.commands.InitialiseExecutionCommand import InitialiseExecutionCommand
+from dpo.commands.GetLastSuccessfulExecutionCommand import GetLastSuccessfulExecutionCommand
+from dpo.commands.GetExecutionLastUpdateTimestampCommand import GetExecutionLastUpdateTimestampCommand
+from dpo.commands.PersistModelsCommand import PersistModelsCommand
+from dpo.commands.CompareModelsCommand import CompareModelsCommand
+from dpo.commands.CompleteExecutionCommand import CompleteExecutionCommand
 
 
-class ModelChangeDetector(BaseObject):
+class DataPipelineOrchestrator(BaseObject):
     def __init__(self, logger=None):
         self.args = self.__get_arguments()
         Shared.configure_root_logger(self.args.log_level)
@@ -51,10 +51,10 @@ class ModelChangeDetector(BaseObject):
     def __get_arguments(self):
         parser = argparse.ArgumentParser(
             description=Constants.APP_NAME,
-            usage='mcd [options] <db-connection-string> <command> [command-parameters]\n\n'
+            usage='dpo [options] <db-connection-string> <command> [command-parameters]\n\n'
                   'To see help text, you can run\n'
-                  '  mcd --help\n'
-                  '  mcd <db-connection-string> <command> --help\n\n',
+                  '  dpo --help\n'
+                  '  dpo <db-connection-string> <command> --help\n\n',
             parents=[Shared.get_default_arguments()])
 
         parser.add_argument(

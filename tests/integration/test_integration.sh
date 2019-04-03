@@ -4,7 +4,7 @@
 set -e
 
 # Bootstrap
-mcd="pipenv run python -m mcd postgresql+psycopg2://postgres:travisci@localhost:5432/postgres"
+dpo="pipenv run python -m dpo postgresql+psycopg2://postgres:travisci@localhost:5432/postgres"
 modelDirectory="./tests/integration/models"
 loadModelDirectory="$modelDirectory/load"
 transformModelDirectory="$modelDirectory/transform"
@@ -58,7 +58,7 @@ AssertAreEqual () {
 }
 
 InitExecution () {
-    local executionId=$($mcd init-execution)
+    local executionId=$($dpo init-execution)
 
     if [ ${#executionId} != 36 ]
     then
@@ -69,7 +69,7 @@ InitExecution () {
 }
 
 GetLastSuccessfulExecution () {
-    local executionId=$($mcd get-last-successful-execution)
+    local executionId=$($dpo get-last-successful-execution)
 
     if [ ${#executionId} != 36 ] && [ $executionId != 'NO_LAST_SUCCESSFUL_EXECUTION' ]
     then
@@ -81,7 +81,7 @@ GetLastSuccessfulExecution () {
 
 GetExecutionLastUpdatedTimestamp () {
     local executionId=$1
-    local executionLastUpdatedTimestamp=$($mcd get-execution-last-updated-timestamp $executionId)
+    local executionLastUpdatedTimestamp=$($dpo get-execution-last-updated-timestamp $executionId)
 
     if ! [[ $executionLastUpdatedTimestamp =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{6}[\+,-][0-9]{2}:[0-9]{2}$ ]]
     then
@@ -96,7 +96,7 @@ PersistModels () {
     local modelType=$2
     local basePath=$3
 
-    $mcd persist-models $executionId $modelType $basePath "**/*.json" "**/*.csv" "**/*.sql"
+    $dpo persist-models $executionId $modelType $basePath "**/*.json" "**/*.csv" "**/*.sql"
 }
 
 CompareModels () {
@@ -104,7 +104,7 @@ CompareModels () {
     local currentExecutionId=$2
     local modelType=$3
 
-    local result=$($mcd compare-models $previousExecutionId $currentExecutionId $modelType)
+    local result=$($dpo compare-models $previousExecutionId $currentExecutionId $modelType)
 
     echo "$result"
 }
@@ -112,7 +112,7 @@ CompareModels () {
 CompleteExecution () {
     local executionId=$1
 
-    $mcd complete-execution $executionId
+    $dpo complete-execution $executionId
 
     local lastSuccessfulExecId=$(GetLastSuccessfulExecution)
     AssertAreEqual "ExecutionID $executionId completed successfully; next LastSuccessfulExecutionID" "$lastSuccessfulExecId" "$executionId"

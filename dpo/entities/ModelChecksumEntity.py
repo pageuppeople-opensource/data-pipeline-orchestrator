@@ -1,9 +1,9 @@
 from sqlalchemy import Column, DateTime, Integer, String, ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
-from mcd import Shared
-from mcd.Shared import Constants
-from mcd.entities import DataPipelineExecutionEntity
+from dpo import Shared
+from dpo.Shared import Constants
+from dpo.entities import DataPipelineExecutionEntity
 
 TABLE_NAME = 'model_checksum'
 
