@@ -6,7 +6,7 @@ BaseEntity = declarative_base()
 
 
 class Constants:
-    APP_NAME = 'model-change-detector'
+    APP_NAME = 'data-pipeline-orchestrator'
     DATA_PIPELINE_EXECUTION_SCHEMA_NAME = 'data_pipeline'
     NO_LAST_SUCCESSFUL_EXECUTION = 'NO_LAST_SUCCESSFUL_EXECUTION'
 

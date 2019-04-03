@@ -12,7 +12,7 @@ from dpo.commands.CompareModelsCommand import CompareModelsCommand
 from dpo.commands.CompleteExecutionCommand import CompleteExecutionCommand
 
 
-class ModelChangeDetector(BaseObject):
+class DataPipelineOrchestrator(BaseObject):
     def __init__(self, logger=None):
         self.args = self.__get_arguments()
         Shared.configure_root_logger(self.args.log_level)

@@ -1,3 +1,3 @@
-from dpo.ModelChangeDetector import ModelChangeDetector
+from dpo.DataPipelineOrchestrator import DataPipelineOrchestrator
 
-ModelChangeDetector()
+DataPipelineOrchestrator()
