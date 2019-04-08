@@ -14,10 +14,6 @@ class DataRepository(BaseObject):
         self.db_engine = db_engine
         self.session_maker = sessionmaker(bind=self.db_engine)
 
-    def ensure_schema_exists(self):
-        self.db_engine.execute(f'CREATE SCHEMA IF NOT EXISTS {Constants.DATA_PIPELINE_EXECUTION_SCHEMA_NAME}')
-        Shared.BaseEntity.metadata.create_all(self.db_engine)
-
     def get_current_db_datetime_with_timezone(self):
         return self.db_engine.execute(select([func.now()])).fetchone()[0]
 

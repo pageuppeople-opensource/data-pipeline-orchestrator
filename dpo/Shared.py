@@ -7,7 +7,7 @@ BaseEntity = declarative_base()
 
 class Constants:
     APP_NAME = 'data-pipeline-orchestrator'
-    DATA_PIPELINE_EXECUTION_SCHEMA_NAME = 'data_pipeline'
+    DATA_PIPELINE_EXECUTION_SCHEMA_NAME = 'dpo'
     NO_LAST_SUCCESSFUL_EXECUTION = 'NO_LAST_SUCCESSFUL_EXECUTION'
 
     class DataPipelineExecutionStatus:
