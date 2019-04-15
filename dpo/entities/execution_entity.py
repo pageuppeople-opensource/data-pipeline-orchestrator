@@ -5,11 +5,10 @@ import uuid
 from dpo.Shared import Constants
 from dpo import Shared
 
-TABLE_NAME = 'data_pipeline_execution'
-PRIMARY_KEY_COL_NAME = 'id'
 
-
-class DataPipelineExecutionEntity(Shared.BaseEntity):
+class ExecutionEntity(Shared.BaseEntity):
+    TABLE_NAME = 'execution'
+    PRIMARY_KEY_COL_NAME = 'id'
 
     __tablename__ = TABLE_NAME
     __table_args__ = {'schema': Constants.DATA_PIPELINE_EXECUTION_SCHEMA_NAME}

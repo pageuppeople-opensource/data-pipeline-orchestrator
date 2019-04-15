@@ -3,12 +3,12 @@ from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
 from dpo import Shared
 from dpo.Shared import Constants
-from dpo.entities import DataPipelineExecutionEntity
-
-TABLE_NAME = 'model_checksum'
+from dpo.entities import ExecutionEntity
 
 
-class ModelChecksumEntity(Shared.BaseEntity):
+class ExecutionModelEntity(Shared.BaseEntity):
+    TABLE_NAME = 'execution_model'
+
     __tablename__ = TABLE_NAME
     __table_args__ = {'schema': Constants.DATA_PIPELINE_EXECUTION_SCHEMA_NAME}
 
@@ -20,8 +20,8 @@ class ModelChecksumEntity(Shared.BaseEntity):
     execution_id = Column('execution_id',
                           UUID(as_uuid=True),
                           ForeignKey(f'{Constants.DATA_PIPELINE_EXECUTION_SCHEMA_NAME}.'
-                                     f'{DataPipelineExecutionEntity.TABLE_NAME}.'
-                                     f'{DataPipelineExecutionEntity.PRIMARY_KEY_COL_NAME}'),
+                                     f'{ExecutionEntity.TABLE_NAME}.'
+                                     f'{ExecutionEntity.PRIMARY_KEY_COL_NAME}'),
                           nullable=False)
 
     created_on = Column('created_on',

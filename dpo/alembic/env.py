@@ -8,8 +8,8 @@ from sqlalchemy import pool
 from alembic import context
 
 from dpo.Shared import BaseEntity
-from dpo.entities import ModelChecksumEntity
-from dpo.entities import DataPipelineExecutionEntity
+from dpo.entities import ExecutionModelEntity
+from dpo.entities import ExecutionEntity
 from dpo.Shared import Constants
 
 # this is the Alembic Config object, which provides

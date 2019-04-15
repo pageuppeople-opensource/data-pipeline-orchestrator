@@ -13,3 +13,4 @@ install: make install_deps
 script:
   - make test_unit
   - make test_integration
+  - make test_downgrade_schema

@@ -4,8 +4,8 @@ from sqlalchemy.orm import sessionmaker
 from dpo import Shared
 from dpo.BaseObject import BaseObject
 from dpo.Shared import Constants
-from dpo.entities.DataPipelineExecutionEntity import DataPipelineExecutionEntity
-from dpo.entities.ModelChecksumEntity import ModelChecksumEntity
+from dpo.entities import ExecutionEntity
+from dpo.entities import ExecutionModelEntity
 
 
 class DataRepository(BaseObject):
@@ -20,7 +20,7 @@ class DataRepository(BaseObject):
     def initialise_execution(self):
         session = self.session_maker()
 
-        data_pipeline_execution = DataPipelineExecutionEntity()
+        data_pipeline_execution = ExecutionEntity()
         session.add(data_pipeline_execution)
 
         session.commit()
@@ -28,7 +28,7 @@ class DataRepository(BaseObject):
 
     def get_execution(self, execution_id):
         session = self.session_maker()
-        result = session.query(DataPipelineExecutionEntity) \
+        result = session.query(ExecutionEntity) \
             .filter_by(id=execution_id) \
             .first()
         session.close()
@@ -36,17 +36,17 @@ class DataRepository(BaseObject):
 
     def get_last_successful_execution(self):
         session = self.session_maker()
-        result = session.query(DataPipelineExecutionEntity) \
+        result = session.query(ExecutionEntity) \
             .filter_by(status=Constants.DataPipelineExecutionStatus.COMPLETED) \
-            .order_by(desc(DataPipelineExecutionEntity.last_updated_on)) \
-            .order_by(desc(DataPipelineExecutionEntity.created_on)) \
+            .order_by(desc(ExecutionEntity.last_updated_on)) \
+            .order_by(desc(ExecutionEntity.created_on)) \
             .first()
         session.close()
         return result
 
     def get_execution_models(self, execution_id, model_type):
         session = self.session_maker()
-        results = session.query(ModelChecksumEntity) \
+        results = session.query(ExecutionModelEntity) \
             .filter_by(execution_id=execution_id, type=model_type)
         session.close()
         return results.all()
@@ -54,14 +54,14 @@ class DataRepository(BaseObject):
     def save_execution_models(self, execution_id, model_type, model_checksums):
         session = self.session_maker()
 
-        data_pipeline_execution = session.query(DataPipelineExecutionEntity) \
+        data_pipeline_execution = session.query(ExecutionEntity) \
             .filter_by(id=execution_id) \
             .one()
 
         data_pipeline_execution.status = \
             Constants.DataPipelineExecutionStatus.IN_PROGRESS
         for model, checksum in sorted(model_checksums.items()):
-            model_checksum_entity = ModelChecksumEntity(execution_id=data_pipeline_execution.id,
+            model_checksum_entity = ExecutionModelEntity(execution_id=data_pipeline_execution.id,
                                                         type=model_type,
                                                         name=model,
                                                         checksum=checksum)
@@ -74,7 +74,7 @@ class DataRepository(BaseObject):
     def complete_execution(self, execution_id):
         session = self.session_maker()
 
-        data_pipeline_execution = session.query(DataPipelineExecutionEntity) \
+        data_pipeline_execution = session.query(ExecutionEntity) \
             .filter_by(id=execution_id) \
             .one()
 
