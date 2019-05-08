@@ -8,8 +8,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from dpo.Shared import BaseEntity
-from dpo.entities import ExecutionModelEntity
-from dpo.entities import ExecutionEntity
+from dpo.entities import ExecutionEntity, ExecutionStepEntity, ExecutionStepModelEntity
 from dpo.Shared import Constants
 
 # this is the Alembic Config object, which provides
@@ -31,17 +30,18 @@ target_metadata = BaseEntity.metadata
 # ... etc.
 
 if not context.get_x_argument():
-    raise AttributeError(
-        "example usage `alembic -c dpo/alembic.ini -x postgresql+psycopg2://postgres:postgres@localhost/postgres downgrade -1`")
+    raise AttributeError("example usage: "
+                         "`alembic -c dpo/alembic.ini -x postgresql+psycopg2://postgres:postgres@localhost/postgres "
+                         "downgrade -1`")
 
 url = context.get_x_argument()[0]
 
 
 def use_schema(object, name, type_, reflected, compare_to):
-    if type_ == 'table' and object.schema != Constants.DATA_PIPELINE_EXECUTION_SCHEMA_NAME:
+    if type_ == 'table' and object.schema != Constants.DATA_PIPELINE_ORCHESTRATOR_SCHEMA_NAME:
         return False
     if (type_ == "column" and
-        not reflected and
+            not reflected and
             object.info.get("skip_autogenerate", False)):
         return False
     if type_ == 'table' and name == 'alembic_version':
@@ -63,7 +63,7 @@ def run_migrations_offline():
     """
     context.configure(
         url=url, target_metadata=target_metadata, literal_binds=True, include_schemas=True,
-        include_object=use_schema, version_table=f'alembic_version_{Constants.DATA_PIPELINE_EXECUTION_SCHEMA_NAME}'
+        include_object=use_schema, version_table=f'alembic_version_{Constants.DATA_PIPELINE_ORCHESTRATOR_SCHEMA_NAME}'
     )
 
     with context.begin_transaction():
@@ -85,7 +85,7 @@ def run_migrations_online():
     with connectable.connect() as connection:
         context.configure(
             connection=connection, target_metadata=target_metadata, include_schemas=True,
-            include_object=use_schema, version_table=f'alembic_version_{Constants.DATA_PIPELINE_EXECUTION_SCHEMA_NAME}'
+            include_object=use_schema, version_table=f'alembic_version_{Constants.DATA_PIPELINE_ORCHESTRATOR_SCHEMA_NAME}'
         )
 
         with context.begin_transaction():

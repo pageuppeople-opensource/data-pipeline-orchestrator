@@ -98,7 +98,7 @@ class DataPipelineOrchestrator(BaseObject):
         persist_models_command_parser.add_argument(
             'model_type',
             metavar='model-type',
-            help=f'type of models being processed, choose from {", ".join(Shared.MODEL_TYPES)}.')
+            help=f'type of models being processed, choose from {", ".join(Shared.STEP_NAMES)}.')
         persist_models_command_parser.add_argument(
             'base_path',
             metavar='base-path',
@@ -129,7 +129,7 @@ class DataPipelineOrchestrator(BaseObject):
         compare_models_command_parser.add_argument(
             'model_type',
             metavar='model-type',
-            help=f'type of models being processed, choose from {", ".join(Shared.MODEL_TYPES)}.')
+            help=f'type of models being processed, choose from {", ".join(Shared.STEP_NAMES)}.')
 
         complete_execution_command_parser = subparsers.add_parser(
             'complete-execution', help='completes the given data pipeline execution.')

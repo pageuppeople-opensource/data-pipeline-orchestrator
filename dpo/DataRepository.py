@@ -5,7 +5,7 @@ from dpo import Shared
 from dpo.BaseObject import BaseObject
 from dpo.Shared import Constants
 from dpo.entities import ExecutionEntity
-from dpo.entities import ExecutionModelEntity
+from dpo.entities import ExecutionStepModelEntity
 
 
 class DataRepository(BaseObject):
@@ -37,8 +37,8 @@ class DataRepository(BaseObject):
     def get_last_successful_execution(self):
         session = self.session_maker()
         result = session.query(ExecutionEntity) \
-            .filter_by(status=Constants.DataPipelineExecutionStatus.COMPLETED) \
-            .order_by(desc(ExecutionEntity.last_updated_on)) \
+            .filter_by(status=Constants.ExecutionStatus.COMPLETED) \
+            .order_by(desc(ExecutionEntity.updated_on)) \
             .order_by(desc(ExecutionEntity.created_on)) \
             .first()
         session.close()
@@ -46,7 +46,7 @@ class DataRepository(BaseObject):
 
     def get_execution_models(self, execution_id, model_type):
         session = self.session_maker()
-        results = session.query(ExecutionModelEntity) \
+        results = session.query(ExecutionStepModelEntity) \
             .filter_by(execution_id=execution_id, type=model_type)
         session.close()
         return results.all()
@@ -59,12 +59,12 @@ class DataRepository(BaseObject):
             .one()
 
         data_pipeline_execution.status = \
-            Constants.DataPipelineExecutionStatus.IN_PROGRESS
+            Constants.ExecutionStatus.IN_PROGRESS
         for model, checksum in sorted(model_checksums.items()):
-            model_checksum_entity = ExecutionModelEntity(execution_id=data_pipeline_execution.id,
-                                                        type=model_type,
-                                                        name=model,
-                                                        checksum=checksum)
+            model_checksum_entity = ExecutionStepModelEntity(execution_id=data_pipeline_execution.id,
+                                                             type=model_type,
+                                                             name=model,
+                                                             checksum=checksum)
             session.add(model_checksum_entity)
 
         session.commit()
@@ -78,10 +78,10 @@ class DataRepository(BaseObject):
             .filter_by(id=execution_id) \
             .one()
 
-        data_pipeline_execution.status = Constants.DataPipelineExecutionStatus.COMPLETED
-        data_pipeline_execution.last_updated_on = self.get_current_db_datetime_with_timezone()
+        data_pipeline_execution.status = Constants.ExecutionStatus.COMPLETED
+        data_pipeline_execution.updated_on = self.get_current_db_datetime_with_timezone()
         data_pipeline_execution.execution_time_ms \
-            = (data_pipeline_execution.last_updated_on - data_pipeline_execution.created_on).total_seconds() * 1000
+            = (data_pipeline_execution.updated_on - data_pipeline_execution.created_on).total_seconds() * 1000
 
         session.commit()
 

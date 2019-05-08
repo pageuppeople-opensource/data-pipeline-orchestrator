@@ -7,20 +7,25 @@ BaseEntity = declarative_base()
 
 class Constants:
     APP_NAME = 'data-pipeline-orchestrator'
-    DATA_PIPELINE_EXECUTION_SCHEMA_NAME = 'dpo'
+    DATA_PIPELINE_ORCHESTRATOR_SCHEMA_NAME = 'dpo'
     NO_LAST_SUCCESSFUL_EXECUTION = 'NO_LAST_SUCCESSFUL_EXECUTION'
 
-    class DataPipelineExecutionStatus:
+    class ExecutionStatus:
         INITIALISED = 'INITIALISED'
         IN_PROGRESS = 'IN_PROGRESS'
         COMPLETED = 'COMPLETED'
 
-    class ModelType:
+    class StepStatus:
+        INITIALISED = 'INITIALISED'
+        IN_PROGRESS = 'IN_PROGRESS'
+        COMPLETED = 'COMPLETED'
+
+    class StepName:
         LOAD = 'LOAD'
         TRANSFORM = 'TRANSFORM'
 
 
-MODEL_TYPES = [Constants.ModelType.LOAD, Constants.ModelType.TRANSFORM]
+STEP_NAMES = [Constants.StepName.LOAD, Constants.StepName.TRANSFORM]
 
 _logLevelStrings = [logging.getLevelName(logging.CRITICAL),
                     logging.getLevelName(logging.ERROR),

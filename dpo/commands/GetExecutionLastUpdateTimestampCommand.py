@@ -16,7 +16,7 @@ class GetExecutionLastUpdateTimestampCommand(BaseCommand):
         data_pipeline_execution = self.repository.get_execution(self._execution_id)
         if data_pipeline_execution is None:
             raise ValueError(self._execution_id)
-        self.output(data_pipeline_execution.last_updated_on)
+        self.output(data_pipeline_execution.updated_on)
         return
 
     def output(self, timestamp):
