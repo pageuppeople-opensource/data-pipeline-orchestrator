@@ -93,18 +93,18 @@ GetExecutionLastUpdatedTimestamp () {
 
 PersistModels () {
     local executionId=$1
-    local modelType=$2
+    local stepName=$2
     local basePath=$3
 
-    $dpo persist-models $executionId $modelType $basePath "**/*.json" "**/*.csv" "**/*.sql"
+    $dpo persist-models $executionId $stepName $basePath "**/*.json" "**/*.csv" "**/*.sql"
 }
 
 CompareModels () {
     local previousExecutionId=$1
     local currentExecutionId=$2
-    local modelType=$3
+    local stepName=$3
 
-    local result=$($dpo compare-models $previousExecutionId $currentExecutionId $modelType)
+    local result=$($dpo compare-models $previousExecutionId $currentExecutionId $stepName)
 
     echo "$result"
 }
