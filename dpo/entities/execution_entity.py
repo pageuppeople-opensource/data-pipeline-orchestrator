@@ -24,10 +24,10 @@ class ExecutionEntity(Shared.BaseEntity):
                         server_default=func.now())
 
     updated_on = Column('updated_on',
-                             DateTime(timezone=True),
-                             nullable=False,
-                             server_default=func.now(),
-                             onupdate=func.now())
+                        DateTime(timezone=True),
+                        nullable=False,
+                        server_default=func.now(),
+                        onupdate=func.now())
 
     status = Column('status',
                     String(50),

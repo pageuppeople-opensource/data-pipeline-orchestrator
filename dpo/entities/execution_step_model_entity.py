@@ -26,18 +26,17 @@ class ExecutionStepModelEntity(Shared.BaseEntity):
                         server_default=func.now())
 
     updated_on = Column('updated_on',
-                             DateTime(timezone=True),
-                             nullable=False,
-                             server_default=func.now(),
-                             onupdate=func.now())
+                        DateTime(timezone=True),
+                        nullable=False,
+                        server_default=func.now(),
+                        onupdate=func.now())
 
     execution_step_id = Column('execution_step_id',
                                UUID(as_uuid=True),
                                ForeignKey(f'{Constants.DATA_PIPELINE_ORCHESTRATOR_SCHEMA_NAME}.'
                                           f'{inspect(ExecutionStepEntity).tables[0].name}.'
                                           f'{inspect(ExecutionStepEntity).primary_key[0].name}'),
-                               nullable=False,
-                               primary_key=True)
+                               nullable=False)
 
     model_name = Column('model_name',
                         String(250),
