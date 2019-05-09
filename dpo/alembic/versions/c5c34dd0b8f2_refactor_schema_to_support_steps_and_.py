@@ -102,7 +102,7 @@ def upgrade():
         ''')
     op.execute(
         '''
-        INERT INTO dpo.execution_step_model (
+        INSERT INTO dpo.execution_step_model (
             execution_step_model_id, execution_step_id, created_on, updated_on, model_name, checksum
         )
         SELECT
