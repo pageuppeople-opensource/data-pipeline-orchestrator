@@ -3,11 +3,11 @@ from pathlib import Path
 from dpo.commands.BaseCommand import BaseCommand
 
 
-class PersistModelsCommand(BaseCommand):
-    def __init__(self, db_connection_string, execution_id, model_type, base_path, model_patterns, logger=None):
+class InitialiseStepCommand(BaseCommand):
+    def __init__(self, db_connection_string, execution_id, step_name, base_path, model_patterns, logger=None):
         super().__init__(db_connection_string, logger)
         self._execution_id = execution_id
-        self._model_type = model_type
+        self._step_name = step_name
         self._base_path = base_path
         self._model_patterns = model_patterns
 
@@ -16,17 +16,25 @@ class PersistModelsCommand(BaseCommand):
         if not model_folder.is_dir():
             raise NotADirectoryError(self._base_path)
 
+        execution_step = self.repository.initialise_execution_step(self._execution_id, self._step_name)
+        self.logger.debug('Initialised new execution_step = ' + str(execution_step))
+
         current_model_checksums = {}
         for model_pattern in self._model_patterns:
             for model_file in model_folder.glob(model_pattern):
                 if model_file.is_file():
                     current_model_checksums[model_file.stem] = self.__get_file_checksum(model_file)
 
-        data_pipeline_execution = self.repository.save_execution_models(
-            self._execution_id, self._model_type, current_model_checksums)
-        self.logger.debug(
-            'Persisting {model_type} models of data_pipeline_execution = {execution_details}'
-            .format(model_type=self._model_type, execution_details=str(data_pipeline_execution)))
+        execution_step = self.repository.save_execution_step_models(
+            execution_step.execution_step_id, current_model_checksums)
+
+        self.logger.debug('Saved {number_of_models} models for execution_step: {step_details}'
+                          .format(number_of_models=len(current_model_checksums.keys()),
+                                  step_details=str(execution_step)))
+        self.output(execution_step.execution_step_id)
+
+    def output(self, execution_step_id):
+        print(str(execution_step_id))
 
     def __get_file_checksum(self, file: Path):
         data = file.read_bytes()

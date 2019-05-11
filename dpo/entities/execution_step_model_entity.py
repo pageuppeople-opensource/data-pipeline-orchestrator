@@ -10,7 +10,7 @@ from sqlalchemy.inspection import inspect
 
 class ExecutionStepModelEntity(Shared.BaseEntity):
     TABLE_NAME = 'execution_step_model'
-    PRIMARY_KEY_COL_NAME = 'id'
+    PRIMARY_KEY_COL_NAME = 'execution_step_model_id'
 
     __tablename__ = TABLE_NAME
     __table_args__ = {'schema': Constants.DATA_PIPELINE_ORCHESTRATOR_SCHEMA_NAME}

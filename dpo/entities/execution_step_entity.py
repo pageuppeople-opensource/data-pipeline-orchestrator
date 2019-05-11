@@ -61,7 +61,7 @@ class ExecutionStepEntity(Shared.BaseEntity):
                                nullable=True)
 
     def __str__(self):
-        return f'id={self.id}, ' \
+        return f'execution_step_id={self.execution_step_id}, ' \
                f'created_on={self.created_on}, ' \
                f'updated_on={self.updated_on}, ' \
                f'execution_id={self.execution_id}, ' \

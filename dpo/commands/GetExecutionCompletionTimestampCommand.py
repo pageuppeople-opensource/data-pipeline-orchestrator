@@ -2,7 +2,7 @@ from dpo.commands.BaseCommand import BaseCommand
 from dpo.Shared import Constants
 
 
-class GetExecutionLastUpdateTimestampCommand(BaseCommand):
+class GetExecutionCompletionTimestampCommand(BaseCommand):
     def __init__(self, db_connection_string, execution_id, logger=None):
         super().__init__(db_connection_string, logger)
         self._execution_id = execution_id
@@ -16,8 +16,8 @@ class GetExecutionLastUpdateTimestampCommand(BaseCommand):
         data_pipeline_execution = self.repository.get_execution(self._execution_id)
         if data_pipeline_execution is None:
             raise ValueError(self._execution_id)
-        self.output(data_pipeline_execution.updated_on)
+        self.output(data_pipeline_execution.completed_on)
         return
 
     def output(self, timestamp):
-        print(timestamp.isoformat())
+        print(timestamp.isoformat() if timestamp is not None else '')

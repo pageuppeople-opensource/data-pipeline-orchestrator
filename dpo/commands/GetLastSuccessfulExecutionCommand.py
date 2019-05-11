@@ -12,5 +12,5 @@ class GetLastSuccessfulExecutionCommand(BaseCommand):
         self.output(data_pipeline_execution)
 
     def output(self, data_pipeline_execution):
-        print(str(data_pipeline_execution.id) if data_pipeline_execution is not None
+        print(str(data_pipeline_execution.execution_id) if data_pipeline_execution is not None
               else Constants.NO_LAST_SUCCESSFUL_EXECUTION)

@@ -57,7 +57,7 @@ AssertAreEqual () {
     fi
 }
 
-InitExecution () {
+InitialiseExecution () {
     local executionId=$($dpo init-execution)
 
     if [ ${#executionId} != 36 ]
@@ -79,34 +79,46 @@ GetLastSuccessfulExecution () {
     echo "$executionId"
 }
 
-GetExecutionLastUpdatedTimestamp () {
+GetExecutionCompletionTimestamp () {
     local executionId=$1
-    local executionLastUpdatedTimestamp=$($dpo get-execution-last-updated-timestamp $executionId)
+    local executionCompletionTimestamp=$($dpo get-execution-completion-timestamp $executionId)
 
-    if ! [[ $executionLastUpdatedTimestamp =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{6}[\+,-][0-9]{2}:[0-9]{2}$ ]]
+    if ! [[ $executionCompletionTimestamp =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{6}[\+,-][0-9]{2}:[0-9]{2}$ ]]
     then
-        LogErrorAndExit "ERROR: expected a non-empty ISO 8601 datetime with timezone, actual "$executionLastUpdatedTimestamp""
+        LogErrorAndExit "ERROR: expected a non-empty ISO 8601 datetime with timezone, actual "$executionCompletionTimestamp""
     fi
 
-    echo "$executionLastUpdatedTimestamp"
+    echo "$executionCompletionTimestamp"
 }
 
-PersistModels () {
+InitialiseStep () {
     local executionId=$1
     local stepName=$2
     local basePath=$3
 
-    $dpo persist-models $executionId $stepName $basePath "**/*.json" "**/*.csv" "**/*.sql"
+    local stepId=$($dpo init-step $executionId $stepName $basePath "**/*.json" "**/*.csv" "**/*.sql")
+
+    if [ ${#stepId} != 36 ]
+    then
+        LogErrorAndExit "ERROR: expected a non-empty guid-length execution-step identifier, actual "$stepId""
+    fi
+
+    echo "$stepId"
 }
 
-CompareModels () {
-    local previousExecutionId=$1
-    local currentExecutionId=$2
-    local stepName=$3
+CompareStepModels () {
+    local stepId=$1
+    local previousExecutionId=$2
 
-    local result=$($dpo compare-models $previousExecutionId $currentExecutionId $stepName)
+    local result=$($dpo compare-step-models $stepId $previousExecutionId)
 
     echo "$result"
+}
+
+CompleteStep () {
+    local stepId=$1
+
+    $dpo complete-step $stepId
 }
 
 CompleteExecution () {
@@ -127,22 +139,26 @@ ExecuteAndAssert () {
     local __resultvar=$5
 
     # Act
-    local execId=$(InitExecution)
+    local execId=$(InitialiseExecution)
     echo "  iter$iter_no execId                                = $execId"
 
     local lastSuccessfulExecId=$(GetLastSuccessfulExecution)
     echo "  iter$iter_no lastSuccessfulExecId                  = $lastSuccessfulExecId"
 
-    local lastSuccessfulExecCompletionTimestamp=$(GetExecutionLastUpdatedTimestamp $lastSuccessfulExecId)
+    local lastSuccessfulExecCompletionTimestamp=$(GetExecutionCompletionTimestamp $lastSuccessfulExecId)
     echo "  iter$iter_no lastSuccessfulExecCompletionTimestamp = $lastSuccessfulExecCompletionTimestamp"
 
-    PersistModels $execId LOAD $loadModelDirectory
-    local changedLoadModels=$(CompareModels $lastSuccessfulExecId $execId LOAD)
+    local loadStepId=$(InitialiseStep $execId LOAD $loadModelDirectory)
+    echo "  iter$iter_no loadStepId                            = $loadStepId"
+    local changedLoadModels=$(CompareStepModels $loadStepId $lastSuccessfulExecId)
     echo "  iter$iter_no changedLoadModels                     = '$changedLoadModels'"
+    CompleteStep $loadStepId
 
-    PersistModels $execId TRANSFORM $transformModelDirectory
-    local changedTransformModels=$(CompareModels $lastSuccessfulExecId $execId TRANSFORM)
+    local transformStepId=$(InitialiseStep $execId TRANSFORM $transformModelDirectory)
+    echo "  iter$iter_no transformStepId                       = $transformStepId"
+    local changedTransformModels=$(CompareStepModels $transformStepId $lastSuccessfulExecId)
     echo "  iter$iter_no changedTransformModels                = '$changedTransformModels'"
+    CompleteStep $transformStepId
 
     CompleteExecution $execId
 
