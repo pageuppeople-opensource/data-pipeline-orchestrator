@@ -111,7 +111,7 @@ $ pytest
 
 Before running integration tests, please ensure the following information is configured correctly:
 
-- `tests/integration/test_integration.sh:7`
+- `tests/integration/test_integration.sh:8`
 
 Please ensure that the database connection string points to a valid PostgreSQL instance with valid parameters.
 

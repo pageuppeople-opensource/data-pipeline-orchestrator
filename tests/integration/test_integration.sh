@@ -4,7 +4,8 @@
 set -e
 
 # Bootstrap
-dpo="pipenv run python -m dpo postgresql+psycopg2://postgres:travisci@localhost:5432/postgres"
+dpo="pipenv run python -m dpo"
+dpo_conn_str="postgresql+psycopg2://postgres:travisci@localhost:5432/postgres"
 modelDirectory="./tests/integration/models"
 loadModelDirectory="$modelDirectory/load"
 transformModelDirectory="$modelDirectory/transform"
@@ -58,7 +59,7 @@ AssertAreEqual () {
 }
 
 InitialiseExecution () {
-    local executionId=$($dpo init-execution)
+    local executionId=$($dpo $dpo_conn_str init-execution)
 
     if [ ${#executionId} != 36 ]
     then
@@ -69,7 +70,7 @@ InitialiseExecution () {
 }
 
 GetLastSuccessfulExecution () {
-    local executionId=$($dpo get-last-successful-execution)
+    local executionId=$($dpo $dpo_conn_str get-last-successful-execution)
 
     if [ ${#executionId} != 36 ] && [ $executionId != 'NO_LAST_SUCCESSFUL_EXECUTION' ]
     then
@@ -81,7 +82,7 @@ GetLastSuccessfulExecution () {
 
 GetExecutionCompletionTimestamp () {
     local executionId=$1
-    local executionCompletionTimestamp=$($dpo get-execution-completion-timestamp $executionId)
+    local executionCompletionTimestamp=$($dpo $dpo_conn_str get-execution-completion-timestamp $executionId)
 
     if ! [[ $executionCompletionTimestamp =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{6}[\+,-][0-9]{2}:[0-9]{2}$ ]]
     then
@@ -96,7 +97,7 @@ InitialiseStep () {
     local stepName=$2
     local basePath=$3
 
-    local stepId=$($dpo init-step $executionId $stepName $basePath "**/*.json" "**/*.csv" "**/*.sql")
+    local stepId=$($dpo $dpo_conn_str init-step $executionId $stepName $basePath "**/*.json" "**/*.csv" "**/*.sql")
 
     if [ ${#stepId} != 36 ]
     then
@@ -110,7 +111,7 @@ CompareStepModels () {
     local stepId=$1
     local previousExecutionId=$2
 
-    local result=$($dpo compare-step-models $stepId $previousExecutionId)
+    local result=$($dpo $dpo_conn_str compare-step-models $stepId $previousExecutionId)
 
     echo "$result"
 }
@@ -118,13 +119,13 @@ CompareStepModels () {
 CompleteStep () {
     local stepId=$1
 
-    $dpo complete-step $stepId
+    $dpo $dpo_conn_str complete-step $stepId
 }
 
 CompleteExecution () {
     local executionId=$1
 
-    $dpo complete-execution $executionId
+    $dpo $dpo_conn_str complete-execution $executionId
 
     local lastSuccessfulExecId=$(GetLastSuccessfulExecution)
     AssertAreEqual "ExecutionID $executionId completed successfully; next LastSuccessfulExecutionID" "$lastSuccessfulExecId" "$executionId"
