@@ -99,7 +99,7 @@ class DataRepository(BaseObject):
 
         return execution_step
 
-    def complete_execution_step(self, execution_step_id):
+    def complete_execution_step(self, execution_step_id, rows_processed):
         session = self.session_maker()
 
         execution_step = session.query(ExecutionStepEntity) \
@@ -110,6 +110,7 @@ class DataRepository(BaseObject):
         execution_step.completed_on = self.get_current_db_datetime_with_timezone()
         execution_step.execution_time_ms \
             = (execution_step.completed_on - execution_step.started_on).total_seconds() * 1000
+        execution_step.rows_processed = rows_processed
 
         session.commit()
 

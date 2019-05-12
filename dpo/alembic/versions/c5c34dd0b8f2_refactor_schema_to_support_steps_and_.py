@@ -33,7 +33,7 @@ def upgrade():
                     sa.Column('started_on', sa.DateTime(timezone=True),
                               server_default=sa.text('now()'), nullable=False),
                     sa.Column('completed_on', sa.DateTime(timezone=True), nullable=True),
-                    sa.Column('execution_time_ms', sa.Integer(), nullable=True),
+                    sa.Column('execution_time_ms', sa.BigInteger(), nullable=True),
                     sa.PrimaryKeyConstraint('execution_id'),
                     schema='dpo'
                     )
@@ -49,7 +49,8 @@ def upgrade():
                     sa.Column('started_on', sa.DateTime(timezone=True), server_default=sa.text('now()'),
                               nullable=False),
                     sa.Column('completed_on', sa.DateTime(timezone=True), nullable=True),
-                    sa.Column('execution_time_ms', sa.Integer(), nullable=True),
+                    sa.Column('execution_time_ms', sa.BigInteger(), nullable=True),
+                    sa.Column('rows_processed', sa.BigInteger(), nullable=True),
                     sa.ForeignKeyConstraint(['execution_id'], ['dpo.execution.execution_id'], ),
                     sa.PrimaryKeyConstraint('execution_step_id'),
                     schema='dpo'
@@ -83,7 +84,7 @@ def upgrade():
         '''
         INSERT INTO dpo.execution_step (
             execution_step_id, execution_id, created_on, updated_on,
-            step_name, status, started_on, completed_on, execution_time_ms
+            step_name, status, started_on, completed_on, execution_time_ms, rows_processed
         )
         SELECT
             uuid_generate_v4() AS execution_step_id
@@ -95,6 +96,7 @@ def upgrade():
             , (select min(sm.created_on) from dpo.fe9eed6d812f_execution_model sm where sm.execution_id = e.id and sm.type = m.type) AS started_on
             , NULL AS completed_on
             , NULL AS execution_time_ms
+            , NULL AS rows_processed
         FROM  dpo.fe9eed6d812f_execution e
         JOIN  dpo.fe9eed6d812f_execution_model m on e.id = m.execution_id
         GROUP BY e.id, e.status, e.created_on, m.type

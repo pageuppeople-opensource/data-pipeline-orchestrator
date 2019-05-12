@@ -46,7 +46,7 @@ class DataPipelineOrchestrator(BaseObject):
         ).execute()
 
     def __process_complete_step_command(self):
-        CompleteStepCommand(self.args.db_connection_string, self.args.step_id).execute()
+        CompleteStepCommand(self.args.db_connection_string, self.args.step_id, self.args.rows_processed).execute()
 
     def __process_complete_execution_command(self):
         CompleteExecutionCommand(self.args.db_connection_string, self.args.execution_id).execute()
@@ -137,6 +137,15 @@ class DataPipelineOrchestrator(BaseObject):
             'step_id',
             metavar='step-id',
             help='an execution\'s step id as received using \'init-step\' command')
+        complete_step_command_parser.add_argument(
+            '-r', '--rows-processed',
+            action='store',
+            const=None,
+            default=None,
+            type=int,
+            nargs='?',
+            help='An optional numeric value to indicate the number of rows processed during this step. '
+                 'Supports a PostgreSQL BIGINT type value.')
 
         complete_execution_command_parser = subparsers.add_parser(
             'complete-execution', help='completes the given execution.')

@@ -29,6 +29,7 @@ $ python -m dpo [options] <db-connection-string> <command> [command-args]
     - `previous-execution-id`: identifier of an existing execution, ideally as returned by the `get-last-successful-execution` command.
   - `complete-step`: Marks the completion of an existing execution's step. Returns nothing unless there's an error.
     - `step-id`: a GUID identifier of an existing execution's step as returned by the `init-step` command.
+    - `rows-processed`: an optional numeric value to indicate the number of rows processed during this step. supports a postgresql BIGINT type value.
   - `complete-execution`: Marks the completion of an existing execution. Returns nothing unless there's an error.
     - `execution-id`: a GUID identifier of an existing execution as returned by the `init-execution` command.
 

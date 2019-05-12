@@ -118,8 +118,9 @@ CompareStepModels () {
 
 CompleteStep () {
     local stepId=$1
+    local rowsProcessed=$2
 
-    $dpo $dpo_conn_str complete-step $stepId
+    $dpo $dpo_conn_str complete-step $stepId --rows-processed $rowsProcessed
 }
 
 CompleteExecution () {
@@ -134,10 +135,12 @@ CompleteExecution () {
 ExecuteAndAssert () {
     # Arrange
     local iter_no=$1
-    local expected_lastSuccessfulExecId=$2
-    local expected_changedLoadModels=$3
-    local expected_changedTransformModels=$4
-    local __resultvar=$5
+    local loadRowsProcessed=$2
+    local transformRowsProcessed=$3
+    local expected_lastSuccessfulExecId=$4
+    local expected_changedLoadModels=$5
+    local expected_changedTransformModels=$6
+    local __resultvar=$7
 
     # Act
     local execId=$(InitialiseExecution)
@@ -153,13 +156,13 @@ ExecuteAndAssert () {
     echo "  iter$iter_no loadStepId                            = $loadStepId"
     local changedLoadModels=$(CompareStepModels $loadStepId $lastSuccessfulExecId)
     echo "  iter$iter_no changedLoadModels                     = '$changedLoadModels'"
-    CompleteStep $loadStepId
+    CompleteStep $loadStepId $loadRowsProcessed
 
     local transformStepId=$(InitialiseStep $execId TRANSFORM $transformModelDirectory)
     echo "  iter$iter_no transformStepId                       = $transformStepId"
     local changedTransformModels=$(CompareStepModels $transformStepId $lastSuccessfulExecId)
     echo "  iter$iter_no changedTransformModels                = '$changedTransformModels'"
-    CompleteStep $transformStepId
+    CompleteStep $transformStepId $transformRowsProcessed
 
     CompleteExecution $execId
 
@@ -209,7 +212,7 @@ echo "transform_model_3" > "$transformModelDirectory/$transform_model_3.sql"
 iter1_expected_lastSuccessfulExecId="" # pass in empty string to skip test since we don't know the past state of the pipeline
 iter1_expected_changedLoadModels="$load_model_1 $load_model_2"
 iter1_expected_changedTransformModels="$transform_model_1 $transform_model_2 $transform_model_3"
-ExecuteAndAssert "1" "$iter1_expected_lastSuccessfulExecId" "$iter1_expected_changedLoadModels" "$iter1_expected_changedTransformModels" iter1_execId
+ExecuteAndAssert "1" "2147483647" "" "$iter1_expected_lastSuccessfulExecId" "$iter1_expected_changedLoadModels" "$iter1_expected_changedTransformModels" iter1_execId
 
 ###############
 # Execution 2 #
@@ -232,4 +235,4 @@ echo "transform_model_4" > "$transformModelDirectory/$transform_model_4.sql"
 iter2_expected_lastSuccessfulExecId="$iter1_execId"
 iter2_expected_changedLoadModels=""
 iter2_expected_changedTransformModels="$transform_model_2 $transform_model_4"
-ExecuteAndAssert "2" "$iter2_expected_lastSuccessfulExecId" "$iter2_expected_changedLoadModels" "$iter2_expected_changedTransformModels" iter2_execId
+ExecuteAndAssert "2" "9223372036854775807" "" "$iter2_expected_lastSuccessfulExecId" "$iter2_expected_changedLoadModels" "$iter2_expected_changedTransformModels" iter2_execId

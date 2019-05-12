@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, String, ForeignKey
+from sqlalchemy import Column, DateTime, BigInteger, String, ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
@@ -57,8 +57,12 @@ class ExecutionStepEntity(Shared.BaseEntity):
                           nullable=True)
 
     execution_time_ms = Column('execution_time_ms',
-                               Integer,
+                               BigInteger,
                                nullable=True)
+
+    rows_processed = Column('rows_processed',
+                            BigInteger,
+                            nullable=True)
 
     def __str__(self):
         return f'execution_step_id={self.execution_step_id}, ' \
@@ -69,4 +73,5 @@ class ExecutionStepEntity(Shared.BaseEntity):
                f'status={self.status}, ' \
                f'started_on={self.started_on}, ' \
                f'completed_on={self.completed_on}, ' \
-               f'execution_time_ms={self.execution_time_ms}.'
+               f'execution_time_ms={self.execution_time_ms}, ' \
+               f'rows_processed={self.rows_processed}.'

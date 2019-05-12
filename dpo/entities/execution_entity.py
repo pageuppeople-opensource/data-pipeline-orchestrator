@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy import Column, DateTime, BigInteger, String
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
@@ -44,7 +44,7 @@ class ExecutionEntity(Shared.BaseEntity):
                           nullable=True)
 
     execution_time_ms = Column('execution_time_ms',
-                               Integer,
+                               BigInteger,
                                nullable=True)
 
     def __str__(self):
