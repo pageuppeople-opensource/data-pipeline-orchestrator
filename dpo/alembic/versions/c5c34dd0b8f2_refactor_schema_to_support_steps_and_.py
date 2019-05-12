@@ -115,14 +115,76 @@ def upgrade():
         ORDER BY em.created_on
         ''')
 
-    # optinally, drop old tables
-    # op.drop_table('fe9eed6d812f_execution_model', schema='dpo')
-    # op.drop_table('fe9eed6d812f_execution', schema='dpo')
+    # drop old tables
+    op.drop_table('fe9eed6d812f_execution_model', schema='dpo')
+    op.drop_table('fe9eed6d812f_execution', schema='dpo')
 
 
 def downgrade():
-    op.drop_table('execution_step_model', schema='dpo')
-    op.drop_table('execution_step', schema='dpo')
-    op.drop_table('execution', schema='dpo')
-    op.execute('ALTER TABLE dpo.fe9eed6d812f_execution RENAME TO execution')
-    op.execute('ALTER TABLE dpo.fe9eed6d812f_execution_model RENAME TO execution_model')
+    # mark existing tables with new revision
+    op.execute('ALTER TABLE dpo.execution RENAME TO c5c34dd0b8f2_execution')
+    op.execute('ALTER TABLE dpo.execution_step RENAME TO c5c34dd0b8f2_execution_step')
+    op.execute('ALTER TABLE dpo.execution_step_model RENAME TO c5c34dd0b8f2_execution_step_model')
+
+    # create old revision tables
+    op.create_table('execution',
+                    sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
+                    sa.Column('created_on', sa.DateTime(timezone=True),
+                              server_default=sa.text('now()'), nullable=False),
+                    sa.Column('last_updated_on', sa.DateTime(timezone=True),
+                              server_default=sa.text('now()'), nullable=False),
+                    sa.Column('status', sa.String(length=50), server_default='INITIALISED', nullable=False),
+                    sa.Column('execution_time_ms', sa.Integer(), nullable=True),
+                    sa.PrimaryKeyConstraint('id'),
+                    schema='dpo'
+                    )
+    op.create_table('execution_model',
+                    sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
+                    sa.Column('execution_id', postgresql.UUID(as_uuid=True), nullable=False),
+                    sa.Column('type', sa.String(length=100), nullable=False),
+                    sa.Column('created_on', sa.DateTime(timezone=True), server_default=sa.text('now()'),
+                              nullable=False),
+                    sa.Column('last_updated_on', sa.DateTime(timezone=True), server_default=sa.text('now()'),
+                              nullable=False),
+                    sa.Column('name', sa.String(length=250), nullable=False),
+                    sa.Column('checksum', sa.String(length=100), nullable=False),
+                    sa.ForeignKeyConstraint(['execution_id'], ['dpo.execution.id'], ),
+                    sa.PrimaryKeyConstraint('id'),
+                    schema='dpo'
+                    )
+
+    # move data from new revision tables to old revision tables
+    op.execute(
+        '''
+        INSERT INTO dpo.execution (
+            id, created_on, last_updated_on, status, execution_time_ms
+        )
+        SELECT
+            execution_id, created_on, updated_on, status, execution_time_ms
+        FROM dpo.c5c34dd0b8f2_execution
+        ''')
+    op.execute('DROP EXTENSION IF EXISTS "uuid-ossp";')
+    op.execute(
+        '''
+        INSERT INTO dpo.execution_model (
+            id, execution_id, type, created_on, last_updated_on, name, checksum
+        )
+        SELECT
+            esm.execution_step_model_id AS id
+            , e.execution_id AS execution_id
+            , es.step_name AS type
+            , esm.created_on AS created_on
+            , esm.updated_on AS last_updated_on
+            , esm.model_name AS name
+            , esm.checksum AS checksum
+        FROM
+            dpo.c5c34dd0b8f2_execution_step_model esm
+            JOIN dpo.c5c34dd0b8f2_execution_step es ON esm.execution_step_id = es.execution_step_id
+            JOIN dpo.c5c34dd0b8f2_execution e ON es.execution_id = e.execution_id
+        ORDER BY e.created_on, es.created_on, esm.created_on
+        ''')
+
+    # drop new revision tables
+    op.drop_table('c5c34dd0b8f2_execution_step_model', schema='dpo')
+    op.drop_table('c5c34dd0b8f2_execution_step', schema='dpo')
+    op.drop_table('c5c34dd0b8f2_execution', schema='dpo')
