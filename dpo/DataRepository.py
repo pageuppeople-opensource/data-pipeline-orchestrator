@@ -89,8 +89,7 @@ class DataRepository(BaseObject):
         execution_step.status = Constants.StepStatus.IN_PROGRESS
 
         for model_name, checksum in sorted(model_checksums.items()):
-            execution_step_model = ExecutionStepModelEntity(execution_step_model_id=uuid.uuid4(),
-                                                            execution_step_id=execution_step_id,
+            execution_step_model = ExecutionStepModelEntity(execution_step_id=execution_step_id,
                                                             model_name=model_name,
                                                             checksum=checksum)
             session.add(execution_step_model)

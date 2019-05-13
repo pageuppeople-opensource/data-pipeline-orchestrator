@@ -18,7 +18,7 @@ class ExecutionStepEntity(Shared.BaseEntity):
     execution_step_id = Column(PRIMARY_KEY_COL_NAME,
                                UUID(as_uuid=True),
                                primary_key=True,
-                               default=uuid.uuid4())
+                               default=uuid.uuid4)
 
     created_on = Column('created_on',
                         DateTime(timezone=True),
