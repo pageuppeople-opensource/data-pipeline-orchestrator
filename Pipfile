@@ -8,6 +8,7 @@ pytest = "*"
 pep8 = "*"
 pylint = "*"
 autopep8 = "*"
+rope = "*"
 
 [packages]
 psycopg2-binary = "==2.8.2"

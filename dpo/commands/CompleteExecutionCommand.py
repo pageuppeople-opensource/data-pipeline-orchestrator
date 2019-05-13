@@ -1,5 +1,3 @@
-import hashlib
-from pathlib import Path
 from dpo.commands.BaseCommand import BaseCommand
 
 
@@ -9,5 +7,5 @@ class CompleteExecutionCommand(BaseCommand):
         self._execution_id = execution_id
 
     def execute(self):
-        data_pipeline_execution = self.repository.complete_execution(self._execution_id)
-        self.logger.debug('Completed data_pipeline_execution = ' + str(data_pipeline_execution))
+        execution = self.repository.complete_execution(self._execution_id)
+        self.logger.debug('Completed Execution: ' + str(execution))

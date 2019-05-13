@@ -7,5 +7,8 @@ class InitialiseExecutionCommand(BaseCommand):
 
     def execute(self):
         data_pipeline_execution = self.repository.initialise_execution()
-        self.logger.debug('Initialiseed new data_pipeline_execution = ' + str(data_pipeline_execution))
-        print(str(data_pipeline_execution.id))
+        self.logger.debug('Initialised new data_pipeline_execution = ' + str(data_pipeline_execution))
+        self.output(data_pipeline_execution.execution_id)
+
+    def output(self, execution_id):
+        print(str(execution_id))

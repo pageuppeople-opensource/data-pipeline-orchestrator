@@ -4,7 +4,8 @@
 set -e
 
 # Bootstrap
-dpo="pipenv run python -m dpo postgresql+psycopg2://postgres:travisci@localhost:5432/postgres"
+dpo="pipenv run python -m dpo"
+dpo_conn_str="postgresql+psycopg2://postgres:travisci@localhost:5432/postgres"
 modelDirectory="./tests/integration/models"
 loadModelDirectory="$modelDirectory/load"
 transformModelDirectory="$modelDirectory/transform"
@@ -57,8 +58,8 @@ AssertAreEqual () {
     fi
 }
 
-InitExecution () {
-    local executionId=$($dpo init-execution)
+InitialiseExecution () {
+    local executionId=$($dpo $dpo_conn_str init-execution)
 
     if [ ${#executionId} != 36 ]
     then
@@ -69,7 +70,7 @@ InitExecution () {
 }
 
 GetLastSuccessfulExecution () {
-    local executionId=$($dpo get-last-successful-execution)
+    local executionId=$($dpo $dpo_conn_str get-last-successful-execution)
 
     if [ ${#executionId} != 36 ] && [ $executionId != 'NO_LAST_SUCCESSFUL_EXECUTION' ]
     then
@@ -79,40 +80,53 @@ GetLastSuccessfulExecution () {
     echo "$executionId"
 }
 
-GetExecutionLastUpdatedTimestamp () {
+GetExecutionCompletionTimestamp () {
     local executionId=$1
-    local executionLastUpdatedTimestamp=$($dpo get-execution-last-updated-timestamp $executionId)
+    local executionCompletionTimestamp=$($dpo $dpo_conn_str get-execution-completion-timestamp $executionId)
 
-    if ! [[ $executionLastUpdatedTimestamp =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{6}[\+,-][0-9]{2}:[0-9]{2}$ ]]
+    if ! [[ $executionCompletionTimestamp =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{6}[\+,-][0-9]{2}:[0-9]{2}$ ]]
     then
-        LogErrorAndExit "ERROR: expected a non-empty ISO 8601 datetime with timezone, actual "$executionLastUpdatedTimestamp""
+        LogErrorAndExit "ERROR: expected a non-empty ISO 8601 datetime with timezone, actual "$executionCompletionTimestamp""
     fi
 
-    echo "$executionLastUpdatedTimestamp"
+    echo "$executionCompletionTimestamp"
 }
 
-PersistModels () {
+InitialiseStep () {
     local executionId=$1
-    local modelType=$2
+    local stepName=$2
     local basePath=$3
 
-    $dpo persist-models $executionId $modelType $basePath "**/*.json" "**/*.csv" "**/*.sql"
+    local stepId=$($dpo $dpo_conn_str init-step $executionId $stepName $basePath "**/*.json" "**/*.csv" "**/*.sql")
+
+    if [ ${#stepId} != 36 ]
+    then
+        LogErrorAndExit "ERROR: expected a non-empty guid-length execution-step identifier, actual "$stepId""
+    fi
+
+    echo "$stepId"
 }
 
-CompareModels () {
-    local previousExecutionId=$1
-    local currentExecutionId=$2
-    local modelType=$3
+CompareStepModels () {
+    local stepId=$1
+    local previousExecutionId=$2
 
-    local result=$($dpo compare-models $previousExecutionId $currentExecutionId $modelType)
+    local result=$($dpo $dpo_conn_str compare-step-models $stepId $previousExecutionId)
 
     echo "$result"
+}
+
+CompleteStep () {
+    local stepId=$1
+    local rowsProcessed=$2
+
+    $dpo $dpo_conn_str complete-step $stepId --rows-processed $rowsProcessed
 }
 
 CompleteExecution () {
     local executionId=$1
 
-    $dpo complete-execution $executionId
+    $dpo $dpo_conn_str complete-execution $executionId
 
     local lastSuccessfulExecId=$(GetLastSuccessfulExecution)
     AssertAreEqual "ExecutionID $executionId completed successfully; next LastSuccessfulExecutionID" "$lastSuccessfulExecId" "$executionId"
@@ -121,28 +135,34 @@ CompleteExecution () {
 ExecuteAndAssert () {
     # Arrange
     local iter_no=$1
-    local expected_lastSuccessfulExecId=$2
-    local expected_changedLoadModels=$3
-    local expected_changedTransformModels=$4
-    local __resultvar=$5
+    local loadRowsProcessed=$2
+    local transformRowsProcessed=$3
+    local expected_lastSuccessfulExecId=$4
+    local expected_changedLoadModels=$5
+    local expected_changedTransformModels=$6
+    local __resultvar=$7
 
     # Act
-    local execId=$(InitExecution)
+    local execId=$(InitialiseExecution)
     echo "  iter$iter_no execId                                = $execId"
 
     local lastSuccessfulExecId=$(GetLastSuccessfulExecution)
     echo "  iter$iter_no lastSuccessfulExecId                  = $lastSuccessfulExecId"
 
-    local lastSuccessfulExecCompletionTimestamp=$(GetExecutionLastUpdatedTimestamp $lastSuccessfulExecId)
+    local lastSuccessfulExecCompletionTimestamp=$(GetExecutionCompletionTimestamp $lastSuccessfulExecId)
     echo "  iter$iter_no lastSuccessfulExecCompletionTimestamp = $lastSuccessfulExecCompletionTimestamp"
 
-    PersistModels $execId LOAD $loadModelDirectory
-    local changedLoadModels=$(CompareModels $lastSuccessfulExecId $execId LOAD)
+    local loadStepId=$(InitialiseStep $execId LOAD $loadModelDirectory)
+    echo "  iter$iter_no loadStepId                            = $loadStepId"
+    local changedLoadModels=$(CompareStepModels $loadStepId $lastSuccessfulExecId)
     echo "  iter$iter_no changedLoadModels                     = '$changedLoadModels'"
+    CompleteStep $loadStepId $loadRowsProcessed
 
-    PersistModels $execId TRANSFORM $transformModelDirectory
-    local changedTransformModels=$(CompareModels $lastSuccessfulExecId $execId TRANSFORM)
+    local transformStepId=$(InitialiseStep $execId TRANSFORM $transformModelDirectory)
+    echo "  iter$iter_no transformStepId                       = $transformStepId"
+    local changedTransformModels=$(CompareStepModels $transformStepId $lastSuccessfulExecId)
     echo "  iter$iter_no changedTransformModels                = '$changedTransformModels'"
+    CompleteStep $transformStepId $transformRowsProcessed
 
     CompleteExecution $execId
 
@@ -192,7 +212,7 @@ echo "transform_model_3" > "$transformModelDirectory/$transform_model_3.sql"
 iter1_expected_lastSuccessfulExecId="" # pass in empty string to skip test since we don't know the past state of the pipeline
 iter1_expected_changedLoadModels="$load_model_1 $load_model_2"
 iter1_expected_changedTransformModels="$transform_model_1 $transform_model_2 $transform_model_3"
-ExecuteAndAssert "1" "$iter1_expected_lastSuccessfulExecId" "$iter1_expected_changedLoadModels" "$iter1_expected_changedTransformModels" iter1_execId
+ExecuteAndAssert "1" "2147483647" "" "$iter1_expected_lastSuccessfulExecId" "$iter1_expected_changedLoadModels" "$iter1_expected_changedTransformModels" iter1_execId
 
 ###############
 # Execution 2 #
@@ -215,4 +235,4 @@ echo "transform_model_4" > "$transformModelDirectory/$transform_model_4.sql"
 iter2_expected_lastSuccessfulExecId="$iter1_execId"
 iter2_expected_changedLoadModels=""
 iter2_expected_changedTransformModels="$transform_model_2 $transform_model_4"
-ExecuteAndAssert "2" "$iter2_expected_lastSuccessfulExecId" "$iter2_expected_changedLoadModels" "$iter2_expected_changedTransformModels" iter2_execId
+ExecuteAndAssert "2" "9223372036854775807" "" "$iter2_expected_lastSuccessfulExecId" "$iter2_expected_changedLoadModels" "$iter2_expected_changedTransformModels" iter2_execId

@@ -1,11 +1,10 @@
 from sqlalchemy import desc, select
 from sqlalchemy.sql import func
 from sqlalchemy.orm import sessionmaker
-from dpo import Shared
 from dpo.BaseObject import BaseObject
 from dpo.Shared import Constants
-from dpo.entities import ExecutionEntity
-from dpo.entities import ExecutionModelEntity
+from dpo.entities import ExecutionEntity, ExecutionStepEntity, ExecutionStepModelEntity
+import uuid
 
 
 class DataRepository(BaseObject):
@@ -29,7 +28,7 @@ class DataRepository(BaseObject):
     def get_execution(self, execution_id):
         session = self.session_maker()
         result = session.query(ExecutionEntity) \
-            .filter_by(id=execution_id) \
+            .filter_by(execution_id=execution_id) \
             .first()
         session.close()
         return result
@@ -37,51 +36,96 @@ class DataRepository(BaseObject):
     def get_last_successful_execution(self):
         session = self.session_maker()
         result = session.query(ExecutionEntity) \
-            .filter_by(status=Constants.DataPipelineExecutionStatus.COMPLETED) \
-            .order_by(desc(ExecutionEntity.last_updated_on)) \
+            .filter_by(status=Constants.ExecutionStatus.COMPLETED) \
+            .order_by(desc(ExecutionEntity.updated_on)) \
             .order_by(desc(ExecutionEntity.created_on)) \
             .first()
         session.close()
         return result
 
-    def get_execution_models(self, execution_id, model_type):
+    def initialise_execution_step(self, execution_id, step_name):
         session = self.session_maker()
-        results = session.query(ExecutionModelEntity) \
-            .filter_by(execution_id=execution_id, type=model_type)
+
+        execution = session.query(ExecutionEntity) \
+            .filter_by(execution_id=execution_id) \
+            .one()
+        execution.status = Constants.ExecutionStatus.IN_PROGRESS
+
+        execution_step = ExecutionStepEntity(execution_id=execution_id,
+                                             step_name=step_name)
+        session.add(execution_step)
+
+        session.commit()
+        return execution_step
+
+    def get_execution_step(self, execution_step_id):
+        session = self.session_maker()
+        result = session.query(ExecutionStepEntity) \
+            .filter_by(execution_step_id=execution_step_id) \
+            .one()
+        session.close()
+        return result
+
+    def get_execution_steps(self, execution_id):
+        session = self.session_maker()
+        result = session.query(ExecutionStepEntity) \
+            .filter_by(execution_id=execution_id)
+        session.close()
+        return result.all()
+
+    def get_execution_step_models(self, step_id):
+        session = self.session_maker()
+        results = session.query(ExecutionStepModelEntity) \
+            .filter_by(execution_step_id=step_id)
         session.close()
         return results.all()
 
-    def save_execution_models(self, execution_id, model_type, model_checksums):
+    def save_execution_step_models(self, execution_step_id, model_checksums):
         session = self.session_maker()
 
-        data_pipeline_execution = session.query(ExecutionEntity) \
-            .filter_by(id=execution_id) \
+        execution_step = session.query(ExecutionStepEntity) \
+            .filter_by(execution_step_id=execution_step_id) \
             .one()
+        execution_step.status = Constants.StepStatus.IN_PROGRESS
 
-        data_pipeline_execution.status = \
-            Constants.DataPipelineExecutionStatus.IN_PROGRESS
-        for model, checksum in sorted(model_checksums.items()):
-            model_checksum_entity = ExecutionModelEntity(execution_id=data_pipeline_execution.id,
-                                                        type=model_type,
-                                                        name=model,
-                                                        checksum=checksum)
-            session.add(model_checksum_entity)
+        for model_name, checksum in sorted(model_checksums.items()):
+            execution_step_model = ExecutionStepModelEntity(execution_step_id=execution_step_id,
+                                                            model_name=model_name,
+                                                            checksum=checksum)
+            session.add(execution_step_model)
 
         session.commit()
 
-        return data_pipeline_execution
+        return execution_step
+
+    def complete_execution_step(self, execution_step_id, rows_processed):
+        session = self.session_maker()
+
+        execution_step = session.query(ExecutionStepEntity) \
+            .filter_by(execution_step_id=execution_step_id) \
+            .one()
+
+        execution_step.status = Constants.StepStatus.COMPLETED
+        execution_step.completed_on = self.get_current_db_datetime_with_timezone()
+        execution_step.execution_time_ms \
+            = (execution_step.completed_on - execution_step.started_on).total_seconds() * 1000
+        execution_step.rows_processed = rows_processed
+
+        session.commit()
+
+        return execution_step
 
     def complete_execution(self, execution_id):
         session = self.session_maker()
 
         data_pipeline_execution = session.query(ExecutionEntity) \
-            .filter_by(id=execution_id) \
+            .filter_by(execution_id=execution_id) \
             .one()
 
-        data_pipeline_execution.status = Constants.DataPipelineExecutionStatus.COMPLETED
-        data_pipeline_execution.last_updated_on = self.get_current_db_datetime_with_timezone()
+        data_pipeline_execution.status = Constants.ExecutionStatus.COMPLETED
+        data_pipeline_execution.completed_on = self.get_current_db_datetime_with_timezone()
         data_pipeline_execution.execution_time_ms \
-            = (data_pipeline_execution.last_updated_on - data_pipeline_execution.created_on).total_seconds() * 1000
+            = (data_pipeline_execution.completed_on - data_pipeline_execution.started_on).total_seconds() * 1000
 
         session.commit()
 
