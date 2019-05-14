@@ -79,7 +79,6 @@ def upgrade():
             id, created_on, last_updated_on, status, created_on, last_updated_on, execution_time_ms
         FROM dpo.fe9eed6d812f_execution
         ''')
-    op.execute('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
     op.execute(
         '''
         INSERT INTO dpo.execution_step (
@@ -165,7 +164,6 @@ def downgrade():
             execution_id, created_on, updated_on, status, execution_time_ms
         FROM dpo.c5c34dd0b8f2_execution
         ''')
-    op.execute('DROP EXTENSION IF EXISTS "uuid-ossp";')
     op.execute(
         '''
         INSERT INTO dpo.execution_model (

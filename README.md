@@ -98,8 +98,6 @@ Once the virtual environment has been activated, please refer to [usage](#Usage)
 
 ## Testing
 
-To run integration tests locally, it is highly recommended that [Docker](https://www.docker.com/) is installed.
-
 ### Unit Tests
 
 To run unit tests, run the following command:
@@ -110,37 +108,18 @@ $ pytest
 
 ### Integration Tests
 
-Before running integration tests, please ensure the following information is configured correctly:
-
-- `tests/integration/test_integration.sh:8`
-
-Please ensure that the database connection string points to a valid PostgreSQL instance with valid parameters.
-
-To run integration tests, run the following command:
-
-```
-$ ./tests/integration/test_integration.sh
-```
-
-#### Docker
-
-If Docker is installed, running tests is as simple as running the following commands:
-
-```
-$ docker pull postgres
-$ docker run --name stubdatabase -p 5432:5432 -e POSTGRES_PASSWORD=travisci -d postgres
-$ make test_integration
-$ docker stop stubdatabase
-$ docker remove stubdatabase
-```
-
-#### Local PostgreSQL
-
-If a local instance of PostgreSQL is installed, run integration tests with the following command:
-
-```
-$ make test_integration
-```
+- Install PostgreSQL 9.6+
+- Execute below scripts to setup test db and user
+  ```
+  ./tests/integration/setup-part1.sql
+  ./tests/integration/setup-part2.sql
+  alembic -c dpo/alembic.ini -x postgresql+psycopg2://integration_test_user:integration_test_password@localhost:5432/integration_test_db upgrade head
+  ```
+- To run integration tests, run either of the following commands:
+  ```
+  $ make test_integration
+  $ ./tests/integration/test_integration.sh
+  ```
 
 #### Notes
 
