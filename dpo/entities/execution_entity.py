@@ -54,4 +54,4 @@ class ExecutionEntity(Shared.BaseEntity):
                f'status={self.status}, ' \
                f'started_on={self.started_on}, ' \
                f'completed_on={self.completed_on}, ' \
-               f'execution_time_ms={self.execution_time_ms}.'
+               f'execution_time_ms={Shared.safe_format_number(self.execution_time_ms)}.'

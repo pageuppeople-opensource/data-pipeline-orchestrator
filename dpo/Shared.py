@@ -36,6 +36,10 @@ _logLevelStrings = [logging.getLevelName(logging.CRITICAL),
 _defaultLogLevelString = logging.getLevelName(logging.INFO)
 
 
+def safe_format_number(x, default_value=''):
+    return default_value if x is None else f'{x:,}'
+
+
 def configure_root_logger(log_level):
     # get the root logger
     logger = logging.getLogger()

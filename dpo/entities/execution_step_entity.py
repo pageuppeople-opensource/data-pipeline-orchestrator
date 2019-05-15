@@ -65,13 +65,13 @@ class ExecutionStepEntity(Shared.BaseEntity):
                             nullable=True)
 
     def __str__(self):
-        return f'execution_step_id={self.execution_step_id}, ' \
+        return f'execution_id={self.execution_id}, ' \
+               f'execution_step_id={self.execution_step_id}, ' \
                f'created_on={self.created_on}, ' \
                f'updated_on={self.updated_on}, ' \
-               f'execution_id={self.execution_id}, ' \
                f'step_name={self.step_name}, ' \
                f'status={self.status}, ' \
                f'started_on={self.started_on}, ' \
                f'completed_on={self.completed_on}, ' \
-               f'execution_time_ms={self.execution_time_ms}, ' \
-               f'rows_processed={self.rows_processed}.'
+               f'execution_time_ms={Shared.safe_format_number(self.execution_time_ms)}, ' \
+               f'rows_processed={Shared.safe_format_number(self.rows_processed)}.'
