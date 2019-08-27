@@ -11,10 +11,11 @@ autopep8 = "*"
 rope = "*"
 
 [packages]
+dpo = {path = "."}
 psycopg2-binary = "==2.8.2"
 SQLAlchemy = "==1.3.3"
 alembic = "==1.0.9"
-dpo = {path = "."}
+sqlalchemy-redshift = "==0.7.3"
 
 [requires]
 python_version = "3.7"

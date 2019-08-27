@@ -14,7 +14,7 @@ class DataRepository(BaseObject):
         self.session_maker = sessionmaker(bind=self.db_engine)
 
     def get_current_db_datetime_with_timezone(self):
-        return self.db_engine.execute(select([func.now()])).fetchone()[0]
+        return self.db_engine.execute(select([func.timezone("UTC", func.getdate())])).fetchone()[0]
 
     def initialise_execution(self):
         session = self.session_maker()
