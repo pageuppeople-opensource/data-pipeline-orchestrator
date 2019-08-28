@@ -13,7 +13,7 @@ $ python -m dpo [options] <db-connection-string> <command> [command-args]
 - `options` include:
   - `--help | -h`: displays help menu.
   - `--log-level | -l`: choose program's logging level, from CRITICAL, ERROR, WARNING, INFO, DEBUG; default is INFO.
-- `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
+- `db-connection-string`: a [Redshift Db Connection String](https://github.com/sqlalchemy-redshift/sqlalchemy-redshift#usage) of the format `redshift+psycopg2://user:password@host:port/dbname`
 - `command` is the function to be performed by the utility. The currently supported values are:
   - `init-execution`: Marks the start of a new execution. Returns an `execution-id` which is a GUID identifier of the new execution.
   - `get-last-successful-execution`: Finds the last successful execution. Returns an `execution-id` which is a GUID identifier of the new execution, if found; else returns and empty string.
@@ -46,18 +46,18 @@ $ python -m dpo <command> --help
 $ pipenv install
 $ pipenv shell
 
-$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname init-execution
+$ python -m dpo redshift+psycopg2://user:password@host:port/dbname init-execution
 
-$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname get-last-successful-execution
-$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname get-execution-last-updated-timestamp id-as-returned-by-get-last-successful-execution-command
+$ python -m dpo redshift+psycopg2://user:password@host:port/dbname get-last-successful-execution
+$ python -m dpo redshift+psycopg2://user:password@host:port/dbname get-execution-last-updated-timestamp id-as-returned-by-get-last-successful-execution-command
 
-$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command load ./relative/path/to/load/models **/*.json
-$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command load
+$ python -m dpo redshift+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command load ./relative/path/to/load/models **/*.json
+$ python -m dpo redshift+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command load
 
-$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command transform C:/absolute/path/to/transform/models group1/*.csv ./group2/**/*.sql
-$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command transform
+$ python -m dpo redshift+psycopg2://user:password@host:port/dbname persist-models id-as-retured-by-init-command transform C:/absolute/path/to/transform/models group1/*.csv ./group2/**/*.sql
+$ python -m dpo redshift+psycopg2://user:password@host:port/dbname compare-models id-as-retured-by-get-last-successful-execution-command id-as-retured-by-init-command transform
 
-$ python -m dpo postgresql+psycopg2://user:password@host:port/dbname complete-execution id-as-retured-by-init-command
+$ python -m dpo redshift+psycopg2://user:password@host:port/dbname complete-execution id-as-retured-by-init-command
 ```
 
 ## Prerequisites
@@ -113,7 +113,7 @@ $ pytest
   ```
   ./tests/integration/setup-part1.sql
   ./tests/integration/setup-part2.sql
-  alembic -c dpo/alembic.ini -x postgresql+psycopg2://integration_test_user:integration_test_password@localhost:5432/integration_test_db upgrade head
+  alembic -c dpo/alembic.ini -x redshift+psycopg2://integration_test_user:integration_test_password@localhost:5432/integration_test_db upgrade head
   ```
 - To run integration tests, run either of the following commands:
   ```

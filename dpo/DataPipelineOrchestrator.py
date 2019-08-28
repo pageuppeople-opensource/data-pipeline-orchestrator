@@ -63,7 +63,7 @@ class DataPipelineOrchestrator(BaseObject):
         parser.add_argument(
             'db_connection_string',
             metavar='db-connection-string',
-            help='provide in PostgreSQL & Psycopg format, postgresql+psycopg2://username:password@host:port/dbname')
+            help='provide in Redshift & Psycopg format, redshift+psycopg2://username:password@host:port/dbname')
 
         subparsers = parser.add_subparsers(title='commands', metavar='', dest='command')
 

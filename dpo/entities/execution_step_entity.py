@@ -1,6 +1,5 @@
 from sqlalchemy import Column, DateTime, BigInteger, String, ForeignKey
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from dpo import Shared
 from dpo.Shared import Constants
@@ -16,23 +15,23 @@ class ExecutionStepEntity(Shared.BaseEntity):
     __table_args__ = {'schema': Constants.DATA_PIPELINE_ORCHESTRATOR_SCHEMA_NAME}
 
     execution_step_id = Column(PRIMARY_KEY_COL_NAME,
-                               UUID(as_uuid=True),
+                               String(250),
                                primary_key=True,
-                               default=uuid.uuid4)
+                               default=f"{uuid.uuid4()}")
 
     created_on = Column('created_on',
                         DateTime(timezone=True),
                         nullable=False,
-                        server_default=func.now())
+                        server_default=func.timezone("UTC", func.getdate()))
 
     updated_on = Column('updated_on',
                         DateTime(timezone=True),
                         nullable=False,
-                        server_default=func.now(),
-                        onupdate=func.now())
+                        server_default=func.timezone("UTC", func.getdate()),
+                        onupdate=func.timezone("UTC", func.getdate()))
 
     execution_id = Column('execution_id',
-                          UUID(as_uuid=True),
+                          String(250),
                           ForeignKey(f'{Constants.DATA_PIPELINE_ORCHESTRATOR_SCHEMA_NAME}.'
                                      f'{inspect(ExecutionEntity).tables[0].name}.'
                                      f'{inspect(ExecutionEntity).primary_key[0].name}'),
@@ -50,7 +49,7 @@ class ExecutionStepEntity(Shared.BaseEntity):
     started_on = Column('started_on',
                         DateTime(timezone=True),
                         nullable=False,
-                        server_default=func.now())
+                        server_default=func.timezone("UTC", func.getdate()))
 
     completed_on = Column('completed_on',
                           DateTime(timezone=True),
