@@ -61,8 +61,8 @@ AssertAreEqual () {
 InitialiseExecution () {
     local providedExecutionId=$1
     if [ ! -z "$providedExecutionId" ]
-        local executionId=$($dpo $dpo_conn_str init-execution --execution-id "$providedExecutionId")
     then
+        local executionId=$($dpo $dpo_conn_str init-execution --execution-id "$providedExecutionId")
     else
         local executionId=$($dpo $dpo_conn_str init-execution)
     fi
@@ -151,9 +151,9 @@ ExecuteAndAssert () {
 
     # Act
     if [ ! -z "$providedExecutionId" ]
+    then
         local execId=$(InitialiseExecution $providedExecutionId)
         AssertAreEqual "Iteration $iter_no's Initialised ExecutionID" "$execId" "$providedExecutionId"
-    then
     else
         local execId=$(InitialiseExecution)
     fi
