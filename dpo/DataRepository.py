@@ -16,10 +16,11 @@ class DataRepository(BaseObject):
     def get_current_db_datetime_with_timezone(self):
         return self.db_engine.execute(select([func.now()])).fetchone()[0]
 
-    def initialise_execution(self):
+    def initialise_execution(self, execution_id=None):
         session = self.session_maker()
 
         data_pipeline_execution = ExecutionEntity()
+        data_pipeline_execution.execution_id = execution_id if execution_id is not None else data_pipeline_execution.execution_id
         session.add(data_pipeline_execution)
 
         session.commit()
