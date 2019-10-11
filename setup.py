@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='dpo',
-      version='0.1.1',
+      version='0.1.6-beta',
       packages=find_packages(),
       install_requires=[
           'psycopg2-binary==2.8.2',
