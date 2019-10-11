@@ -59,7 +59,13 @@ AssertAreEqual () {
 }
 
 InitialiseExecution () {
-    local executionId=$($dpo $dpo_conn_str init-execution)
+    local providedExecutionId=$1
+    if [ ! -z "$providedExecutionId" ]
+        local executionId=$($dpo $dpo_conn_str init-execution --execution-id "$providedExecutionId")
+    then
+    else
+        local executionId=$($dpo $dpo_conn_str init-execution)
+    fi
 
     if [ ${#executionId} != 36 ]
     then
@@ -135,15 +141,22 @@ CompleteExecution () {
 ExecuteAndAssert () {
     # Arrange
     local iter_no=$1
-    local loadRowsProcessed=$2
-    local transformRowsProcessed=$3
-    local expected_lastSuccessfulExecId=$4
-    local expected_changedLoadModels=$5
-    local expected_changedTransformModels=$6
-    local __resultvar=$7
+    local providedExecutionId=$2
+    local loadRowsProcessed=$3
+    local transformRowsProcessed=$4
+    local expected_lastSuccessfulExecId=$5
+    local expected_changedLoadModels=$6
+    local expected_changedTransformModels=$7
+    local __resultvar=$8
 
     # Act
-    local execId=$(InitialiseExecution)
+    if [ ! -z "$providedExecutionId" ]
+        local execId=$(InitialiseExecution $providedExecutionId)
+        AssertAreEqual "Iteration $iter_no's Initialised ExecutionID" "$execId" "$providedExecutionId"
+    then
+    else
+        local execId=$(InitialiseExecution)
+    fi
     echo "  iter$iter_no execId                                = $execId"
 
     local lastSuccessfulExecId=$(GetLastSuccessfulExecution)
@@ -192,6 +205,7 @@ transform_model_4="transform_model_4_$(NewUUID)"
 echo -e "\nBeginning execution #1"
 
 # ARRANGE
+iter1_execution_id=""
 ## Remove test models' directory, if exists
 rm -rf $modelDirectory
 
@@ -212,7 +226,7 @@ echo "transform_model_3" > "$transformModelDirectory/$transform_model_3.sql"
 iter1_expected_lastSuccessfulExecId="" # pass in empty string to skip test since we don't know the past state of the pipeline
 iter1_expected_changedLoadModels="$load_model_1 $load_model_2"
 iter1_expected_changedTransformModels="$transform_model_1 $transform_model_2 $transform_model_3"
-ExecuteAndAssert "1" "2147483647" "" "$iter1_expected_lastSuccessfulExecId" "$iter1_expected_changedLoadModels" "$iter1_expected_changedTransformModels" iter1_execId
+ExecuteAndAssert "1" "$iter1_execution_id" "2147483647" "" "$iter1_expected_lastSuccessfulExecId" "$iter1_expected_changedLoadModels" "$iter1_expected_changedTransformModels" iter1_execId
 
 ###############
 # Execution 2 #
@@ -220,6 +234,7 @@ ExecuteAndAssert "1" "2147483647" "" "$iter1_expected_lastSuccessfulExecId" "$it
 echo -e "\nBeginning execution #2"
 
 # ARRANGE
+iter2_execution_id=$(NewUUID)
 echo " Making no changes to any LOAD models"
 
 echo " Modifying transform_model_2"
@@ -235,4 +250,4 @@ echo "transform_model_4" > "$transformModelDirectory/$transform_model_4.sql"
 iter2_expected_lastSuccessfulExecId="$iter1_execId"
 iter2_expected_changedLoadModels=""
 iter2_expected_changedTransformModels="$transform_model_2 $transform_model_4"
-ExecuteAndAssert "2" "9223372036854775807" "" "$iter2_expected_lastSuccessfulExecId" "$iter2_expected_changedLoadModels" "$iter2_expected_changedTransformModels" iter2_execId
+ExecuteAndAssert "2" "$iter2_execution_id" "9223372036854775807" "" "$iter2_expected_lastSuccessfulExecId" "$iter2_expected_changedLoadModels" "$iter2_expected_changedTransformModels" iter2_execId

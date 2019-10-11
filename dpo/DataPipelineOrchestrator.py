@@ -26,7 +26,7 @@ class DataPipelineOrchestrator(BaseObject):
         self.args.func()
 
     def __process_init_execution_command(self):
-        InitialiseExecutionCommand(self.args.db_connection_string).execute()
+        InitialiseExecutionCommand(self.args.db_connection_string, self.args.execution_id).execute()
 
     def __process_get_last_successful_execution_command(self):
         GetLastSuccessfulExecutionCommand(self.args.db_connection_string).execute()
@@ -70,6 +70,16 @@ class DataPipelineOrchestrator(BaseObject):
         init_execution_command_parser = subparsers.add_parser(
             'init-execution', help='initialises a new execution')
         init_execution_command_parser.set_defaults(func=self.__process_init_execution_command)
+        init_execution_command_parser.add_argument(
+            '-id', '--execution-id',
+            action='store',
+            const=None,
+            default=None,
+            type=str,
+            nargs='?',
+            help='An optional GUID to use as the execution-id of new execution.'
+                 'Supports a PostgreSQL UUID type value.'
+                 'Throws an error if the GUID provided is already in use.')
 
         get_last_successful_execution_command_parser = subparsers.add_parser(
             'get-last-successful-execution',
