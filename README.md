@@ -1,6 +1,6 @@
 # Data Pipeline Orchestrator
 
-[![Build Status](https://travis-ci.com/pageuppeople-opensource/data-pipeline-orchestrator.svg?branch=master)](https://travis-ci.com/PageUpPeopleOrg/data-pipeline-orchestrator)
+[![Build Status](https://travis-ci.com/pageuppeople-opensource/data-pipeline-orchestrator.svg?branch=master)](https://travis-ci.com/pageuppeople-opensource/data-pipeline-orchestrator)
 
 A utility that persists state of a data pipeline execution and uses them to detect changes in models.
 
