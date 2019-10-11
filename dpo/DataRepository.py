@@ -20,7 +20,7 @@ class DataRepository(BaseObject):
         session = self.session_maker()
 
         data_pipeline_execution = ExecutionEntity()
-        data_pipeline_execution.id = execution_id if execution_id is not None else data_pipeline_execution.id
+        data_pipeline_execution.execution_id = execution_id if execution_id is not None else data_pipeline_execution.execution_id
         session.add(data_pipeline_execution)
 
         session.commit()
