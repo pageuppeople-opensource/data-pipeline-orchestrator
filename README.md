@@ -16,6 +16,7 @@ $ python -m dpo [options] <db-connection-string> <command> [command-args]
 - `db-connection-string`: a [PostgreSQL Db Connection String](http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2) of the format `postgresql+psycopg2://user:password@host:port/dbname`
 - `command` is the function to be performed by the utility. The currently supported values are:
   - `init-execution`: Marks the start of a new execution. Returns an `execution-id` which is a GUID identifier of the new execution.
+    - `execution-id`: An optional GUID to use as the execution-id of new execution. Supports a PostgreSQL UUID type value. Throws an error if the GUID provided is already in use.
   - `get-last-successful-execution`: Finds the last successful execution. Returns an `execution-id` which is a GUID identifier of the new execution, if found; else returns and empty string.
   - `get-execution-completion-timestamp`: Returns the `last-updated-on` timestamp with timezone of the given `execution-id`. Raises error if given `execution-id` is invalid.
     - `execution-id`: a GUID identifier of an existing execution.
